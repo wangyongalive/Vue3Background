@@ -5,11 +5,16 @@ const router = createRouter({
   routes: [
     {
       path: "/",
-      name: "home",
-      component: () => import("@/views/HomeView.vue"),
-      meta: {
-        title: "首页",
-      },
+      component: () => import("@/layouts/admin.vue"),
+      children: [
+        {
+          path: "/",
+          component: () => import("../views/HomeView.vue"),
+          meta: {
+            title: "首页",
+          },
+        },
+      ],
     },
     {
       path: "/login",
