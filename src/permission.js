@@ -1,9 +1,12 @@
 import router from "@/router";
-import { getToken } from "@/composables/auth.js";
-import { toast } from "@/composables/util.js";
 import store from "./store";
+import { getToken } from "@/composables/auth.js";
+import { toast, showFullLoading, hideFullLoading } from "@/composables/util.js";
+
 // 全局前置守卫
 router.beforeEach(async (to, from, next) => {
+  // 显示loading
+  showFullLoading();
   const token = getToken();
 
   // 没有登录,强制跳转到登录页
@@ -31,4 +34,9 @@ router.beforeEach(async (to, from, next) => {
   }
 
   next(); // 如果有next 一定要放行
+});
+
+// 全局后置守卫
+router.afterEach(() => {
+  hideFullLoading();
 });

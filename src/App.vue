@@ -6,6 +6,11 @@ import { RouterView } from 'vue-router'
   <RouterView />
 </template>
 
-<style scoped>
+<style>
+/* 修改进度条的颜色 */
+#nprogress .bar{
+  background: #f4f4f4 !important;
+  height: 3px !important;
 
+}
 </style>
