@@ -1,5 +1,4 @@
 import { createRouter, createWebHashHistory } from "vue-router";
-import HomeView from "@/views/HomeView.vue";
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -7,7 +6,10 @@ const router = createRouter({
     {
       path: "/",
       name: "home",
-      component: HomeView,
+      component: () => import("@/views/HomeView.vue"),
+      meta: {
+        title: "首页",
+      },
     },
     {
       path: "/login",
@@ -16,15 +18,19 @@ const router = createRouter({
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: () => import("../views/LoginView.vue"),
+      meta: {
+        title: "登录页",
+      },
     },
     {
       path: "/:pathMatch(.*)*",
       name: "NotFound",
       component: () => import("../views/404View.vue"),
+      meta: {
+        title: "页面不存在",
+      },
     },
   ],
 });
-
-
 
 export default router;

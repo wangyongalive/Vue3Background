@@ -33,6 +33,9 @@ router.beforeEach(async (to, from, next) => {
     }
   }
 
+  // 设置页面标题
+  document.title = `${to.meta.title ? to.meta.title : ""}   - xx后台管理系统`;
+  
   next(); // 如果有next 一定要放行
 });
 

@@ -12,5 +12,5 @@ export function getInfo() {
 }
 
 export function logout() {
-  return request.post("/admin/logout1");
+  return request.post("/admin/logout");
 }
