@@ -82,102 +82,20 @@
 </template>
 
 <script setup>
-import { ref, reactive } from "vue";
-import { useRouter } from "vue-router";
-import { useStore } from "vuex";
 import { useFullscreen } from "@vueuse/core";
 import FormDrawer from '@/components/FormDrawer.vue'
-import { showModal, toast } from "@/composables/util.js";
-import { logout, updatepassword } from "@/api/manager.js";
-
-// 修改密码
-const formDrawerRef = ref(null)
-
-const form = reactive({
-    oldpassword: "",
-    password: "",
-    repassword: ""
-});
-
-const rules = {
-    oldpassword: [
-        {
-            required: true,
-            message: "旧密码不能为空",
-            trigger: "blur",
-        },
-    ],
-    password: [
-        {
-            required: true,
-            message: "新密码不能为空",
-            trigger: "blur",
-        },
-    ],
-    repassword: [
-        {
-            required: true,
-            message: "确认密码不能为空",
-            trigger: "blur",
-        },
-    ],
-
-};
-
-const formRef = ref(null)
-const onSubmit = () => {
-    
-    formRef.value.validate((valid, fields) => {
-        if (!valid) {
-            return false
-        }
-        // loading.value = true
-        formDrawerRef.value.showLoading()
-        updatepassword(form).then(res => {
-            toast('修改密码成功，请重新登陆')
-            store.dispatch("logout");
-
-            // 跳转登陆页
-            router.push("/login");
-
-        }).finally(() => {
-            // loading.value = false
-            formDrawerRef.value.hideLoading()
-        })
-    })
-};
+import { useRepassword, useLogout } from "@/composables/useManager.js";
 
 
 const { isFullscreen, toggle } = useFullscreen();
+const { formDrawerRef,
+    form,
+    rules,
+    formRef,
+    onSubmit,
+    openRePasswordForm } = useRepassword()
+const { handleLogout } = useLogout()
 
-const router = useRouter();
-const store = useStore();
-function handleLogout() {
-    showModal("是否退出登陆?")
-        .then((res) => {
-            // console.log('showModal',res)
-            // 无论失败还是成功 都退出登陆
-            logout()
-                .finally(() => {
-                    console.log("finally logout");
-
-                    // 移除cookie里面的token
-                    // 清除用户当前的状态vuex
-                    store.dispatch("logout");
-
-                    // 跳转登陆页
-                    router.push("/login");
-                    // 提示退出登陆成功
-                    toast("退出登陆成功");
-                })
-                .catch((err) => {
-                    console.log("logout", err);
-                });
-        })
-        .catch(() => {
-            console.log("选择了取消！！！");
-        });
-}
 
 function handleCommand(c) {
     switch (c) {
@@ -186,7 +104,8 @@ function handleCommand(c) {
             break;
         case "rePassword":
             // showDrawer.value = true;
-            formDrawerRef.value.open()
+            // formDrawerRef.value.open()
+            openRePasswordForm()
             break;
     }
 }
@@ -196,7 +115,7 @@ function handleCommand(c) {
 //     location.reload()
 // }
 
-// 简写
+// 刷新的简写
 const handleRefresh = () => location.reload();
 </script>
 
