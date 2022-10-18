@@ -40,7 +40,7 @@
         </div>
 
         <!-- 抽屉组件 -->
-        <el-drawer v-model="showDrawer" title="修改密码" size="45%" :close-on-click-modal="false">
+        <!-- <el-drawer v-model="showDrawer" title="修改密码" size="45%" :close-on-click-modal="false">
             <el-form ref="formRef" :model="form" :rules="rules" label-width="80px" size="small">
                 <el-form-item prop="oldpassword" label="旧密码">
                     <el-input v-model="form.oldpassword" placeholder="请输入旧密码">
@@ -55,12 +55,29 @@
                     </el-input>
                 </el-form-item>
                 <el-form-item>
-                    <!-- loading状态下无法点击 -->
                     <el-button type="primary" @click="onSubmit" :loading="loading">确定
                     </el-button>
                 </el-form-item>
             </el-form>
-        </el-drawer>
+        </el-drawer> -->
+        <!-- loading状态下无法点击 -->
+
+        <form-drawer ref="formDrawerRef" title="修改密码" destroyOnClose @submit="onSubmit">
+            <el-form ref="formRef" :model="form" :rules="rules" label-width="80px" size="small">
+                <el-form-item prop="oldpassword" label="旧密码">
+                    <el-input v-model="form.oldpassword" placeholder="请输入旧密码">
+                    </el-input>
+                </el-form-item>
+                <el-form-item prop="password" label="新密码">
+                    <el-input v-model="form.password" type="password" placeholder="请输入密码" show-password>
+                    </el-input>
+                </el-form-item>
+                <el-form-item prop="repassword" label="确认密码">
+                    <el-input v-model="form.repassword" type="password" placeholder="请输入确认密码" show-password>
+                    </el-input>
+                </el-form-item>
+            </el-form>
+        </form-drawer>
     </div>
 </template>
 
@@ -69,11 +86,13 @@ import { ref, reactive } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import { useFullscreen } from "@vueuse/core";
+import FormDrawer from '@/components/FormDrawer.vue'
 import { showModal, toast } from "@/composables/util.js";
 import { logout, updatepassword } from "@/api/manager.js";
 
 // 修改密码
-const showDrawer = ref(false);
+const formDrawerRef = ref(null)
+
 const form = reactive({
     oldpassword: "",
     password: "",
@@ -106,13 +125,14 @@ const rules = {
 };
 
 const formRef = ref(null)
-const loading = ref(false)
 const onSubmit = () => {
+    
     formRef.value.validate((valid, fields) => {
         if (!valid) {
             return false
         }
-        loading.value = true
+        // loading.value = true
+        formDrawerRef.value.showLoading()
         updatepassword(form).then(res => {
             toast('修改密码成功，请重新登陆')
             store.dispatch("logout");
@@ -121,10 +141,12 @@ const onSubmit = () => {
             router.push("/login");
 
         }).finally(() => {
-            loading.value = false
+            // loading.value = false
+            formDrawerRef.value.hideLoading()
         })
     })
 };
+
 
 const { isFullscreen, toggle } = useFullscreen();
 
@@ -163,7 +185,8 @@ function handleCommand(c) {
             handleLogout();
             break;
         case "rePassword":
-            showDrawer.value = true;
+            // showDrawer.value = true;
+            formDrawerRef.value.open()
             break;
     }
 }
