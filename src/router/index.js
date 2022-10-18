@@ -14,6 +14,13 @@ const router = createRouter({
             title: "首页",
           },
         },
+        {
+          path: "goods/list",
+          component: () => import("../views/goods/list.vue"),
+          meta: {
+            title: "首页",
+          },
+        },
       ],
     },
     {

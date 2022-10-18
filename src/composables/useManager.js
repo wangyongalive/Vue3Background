@@ -4,6 +4,8 @@ import { useStore } from "vuex";
 import { logout, updatepassword } from "@/api/manager.js";
 import { showModal, toast } from "@/composables/util.js";
 
+// 抽离的代码要引入对应的库
+// useRouter useStore 不能在外面引用
 export function useRepassword() {
   const router = useRouter();
   const store = useStore();
