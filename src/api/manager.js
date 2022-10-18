@@ -14,3 +14,7 @@ export function getInfo() {
 export function logout() {
   return request.post("/admin/logout");
 }
+
+export function updatepassword(data) {
+  return request.post("/admin/updatepassword", data);
+}

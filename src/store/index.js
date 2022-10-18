@@ -48,12 +48,17 @@ const store = createStore({
           });
       });
     },
-    // 退出登陆
+    // 退出登陆 默认返回一个promise
     logout({ commit }) {
       // 清除token
       removeToken();
       // 清空vuex
       commit("SET_USERINFO", {});
+    },
+    test() {
+      return new Promise((resolve, reject) => {
+
+      });
     },
   },
 });

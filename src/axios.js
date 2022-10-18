@@ -1,6 +1,7 @@
 import axios from "axios";
 import { getToken } from "@/composables/auth.js";
 import { toast } from "@/composables/util.js";
+import store from "./store"; // js中引入store
 
 const instance = axios.create({
   baseURL: "/api",
@@ -37,7 +38,12 @@ instance.interceptors.response.use(
     //   type: "error",
     //   duration: 3000,
     // });
-    toast(`${error.response.data.msg}` || "请求失败", "error");
+    const msg = `${error.response.data.msg}` || "请求失败";
+    if (msg === "非法token，请先登录！") {
+      // 退出登陆 logout 清空token vuex  最后刷新页面
+      store.dispatch("logout").finally(() => location.reload());
+    }
+    toast(msg, "error");
     return Promise.reject(error);
   }
 );

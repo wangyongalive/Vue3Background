@@ -38,20 +38,95 @@
                 </template>
             </el-dropdown>
         </div>
+
+        <!-- 抽屉组件 -->
+        <el-drawer v-model="showDrawer" title="修改密码" size="45%" :close-on-click-modal="false">
+            <el-form ref="formRef" :model="form" :rules="rules" label-width="80px" size="small">
+                <el-form-item prop="oldpassword" label="旧密码">
+                    <el-input v-model="form.oldpassword" placeholder="请输入旧密码">
+                    </el-input>
+                </el-form-item>
+                <el-form-item prop="password" label="新密码">
+                    <el-input v-model="form.password" type="password" placeholder="请输入密码" show-password>
+                    </el-input>
+                </el-form-item>
+                <el-form-item prop="repassword" label="确认密码">
+                    <el-input v-model="form.repassword" type="password" placeholder="请输入确认密码" show-password>
+                    </el-input>
+                </el-form-item>
+                <el-form-item>
+                    <!-- loading状态下无法点击 -->
+                    <el-button type="primary" @click="onSubmit" :loading="loading">确定
+                    </el-button>
+                </el-form-item>
+            </el-form>
+        </el-drawer>
     </div>
 </template>
 
 <script setup>
-
+import { ref, reactive } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
-import { useFullscreen } from '@vueuse/core'
+import { useFullscreen } from "@vueuse/core";
 import { showModal, toast } from "@/composables/util.js";
-import { logout } from "@/api/manager.js";
+import { logout, updatepassword } from "@/api/manager.js";
 
+// 修改密码
+const showDrawer = ref(false);
+const form = reactive({
+    oldpassword: "",
+    password: "",
+    repassword: ""
+});
 
-const { isFullscreen, toggle } = useFullscreen()
+const rules = {
+    oldpassword: [
+        {
+            required: true,
+            message: "旧密码不能为空",
+            trigger: "blur",
+        },
+    ],
+    password: [
+        {
+            required: true,
+            message: "新密码不能为空",
+            trigger: "blur",
+        },
+    ],
+    repassword: [
+        {
+            required: true,
+            message: "确认密码不能为空",
+            trigger: "blur",
+        },
+    ],
 
+};
+
+const formRef = ref(null)
+const loading = ref(false)
+const onSubmit = () => {
+    formRef.value.validate((valid, fields) => {
+        if (!valid) {
+            return false
+        }
+        loading.value = true
+        updatepassword(form).then(res => {
+            toast('修改密码成功，请重新登陆')
+            store.dispatch("logout");
+
+            // 跳转登陆页
+            router.push("/login");
+
+        }).finally(() => {
+            loading.value = false
+        })
+    })
+};
+
+const { isFullscreen, toggle } = useFullscreen();
 
 const router = useRouter();
 const store = useStore();
@@ -65,7 +140,7 @@ function handleLogout() {
                     console.log("finally logout");
 
                     // 移除cookie里面的token
-                    // 清楚用户当前的状态vuex
+                    // 清除用户当前的状态vuex
                     store.dispatch("logout");
 
                     // 跳转登陆页
@@ -84,11 +159,11 @@ function handleLogout() {
 
 function handleCommand(c) {
     switch (c) {
-        case 'logout':
+        case "logout":
             handleLogout();
             break;
-        case 'rePassword':
-
+        case "rePassword":
+            showDrawer.value = true;
             break;
     }
 }
@@ -99,12 +174,7 @@ function handleCommand(c) {
 // }
 
 // 简写
-const handleRefresh = () => location.reload()
-
-
-
-
-
+const handleRefresh = () => location.reload();
 </script>
 
 <style scoped>
@@ -121,11 +191,11 @@ const handleRefresh = () => location.reload()
 .icon-btn {
     width: 42px;
     height: 64px;
-    cursor: pointer
+    cursor: pointer;
 }
 
 .icon-btn:hover {
-    @apply bg-indigo-600
+    @apply bg-indigo-600;
 }
 
 .f-header .dropdown {
