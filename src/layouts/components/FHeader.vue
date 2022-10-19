@@ -6,8 +6,11 @@
             </el-icon>
             xx管理系统
         </span>
-        <el-icon class="icon-btn">
-            <Fold />
+        <!-- stop修饰符  阻止事件冒泡 -->
+        <el-icon class="icon-btn" @click.stop="$store.commit('handleAsideWidth')">
+            <!-- <el-icon class="icon-btn" @click.stop="handleClick"> -->
+            <Fold v-if="$store.state.asideWidth == '250px'" />
+            <Expand v-else />
         </el-icon>
         <el-tooltip effect="dark" content="刷新" placement="bottom">
             <el-icon class="icon-btn" @click="handleRefresh">
@@ -114,6 +117,11 @@ function handleCommand(c) {
 // const handleRefresh = () => {
 //     location.reload()
 // }
+
+const handleClick = () => {
+    console.log('handleClick')
+}
+
 
 // 刷新的简写
 const handleRefresh = () => location.reload();

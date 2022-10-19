@@ -1,6 +1,7 @@
 <template>
-    <div class="f-menu">
-        <el-menu default-active="2" class="border-0" @select="handleSelect">
+    <div class="f-menu" :style="{width:$store.state.asideWidth}">
+        <!-- collapse-transition="false" 关闭动画效果 -->
+        <el-menu unique-opened :collapse="isCollapse" :collapse-transition="false"  default-active="2" class="border-0" @select="handleSelect">
             <template v-for="(item, index) in  asideMenus" :key="index">
                 <el-sub-menu v-if="item.child && item.child.length>0" :index="item.name">
                     <template #title>
@@ -31,8 +32,15 @@
     </div>
 </template>
 <script setup>
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
 const router = useRouter()
+const store = useStore()
+
+// 是否折叠状态
+const isCollapse = computed(() => !(store.state.asideWidth == '250px'))
+
 const asideMenus = [{
     "name": "后台面板",
     "icon": "help",
@@ -58,6 +66,9 @@ const handleSelect = (e) => {
 
 <style scoped>
 .f-menu {
-    @apply fixed top-[64px] left-0 bottom-0 w-250px overflow-auto shadow-md bg-light-50;
+    /* 给收缩添加动画 */
+    transition: all 0.2s; 
+    /* overflow-x-hidden 消除收缩变化时,x方向的滚动条 */
+    @apply fixed top-[64px] left-0 bottom-0 overflow-x-hidden overflow-y-auto shadow-md bg-light-50;
 }
 </style>
