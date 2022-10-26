@@ -21,6 +21,13 @@ const router = createRouter({
             title: "首页",
           },
         },
+        {
+          path: "category/list",
+          component: () => import("../views/category/list.vue"),
+          meta: {
+            title: "分类页面",
+          },
+        },
       ],
     },
     {

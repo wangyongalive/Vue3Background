@@ -45,30 +45,8 @@ const defaultActive = ref(route.path)
 // 是否折叠状态 boolean
 const isCollapse = computed(() => !(store.state.asideWidth == "250px"));
 
-const asideMenus = [
-    {
-        name: "后台面板",
-        icon: "help",
-        child: [
-            {
-                name: "主控台",
-                icon: "home-filled",
-                frontpath: "/",
-            },
-        ],
-    },
-    {
-        name: "商城管理",
-        icon: "shopping-bag",
-        child: [
-            {
-                name: "商品管理",
-                icon: "shopping-cart-full",
-                frontpath: "/goods/list",
-            },
-        ],
-    },
-];
+// 菜单 不用computed也可以 
+const asideMenus = computed(()=>store.state.menus)
 
 // 路由跳转
 const handleSelect = (e) => {
@@ -84,5 +62,8 @@ const handleSelect = (e) => {
     /* overflow-x-hidden 消除收缩变化时,x方向的滚动条 */
     /* overflow: auto  会根据实际情况显示滚动条*/
     @apply fixed top-[64px] left-0 bottom-0 overflow-x-hidden overflow-y-auto shadow-md bg-light-50;
+}
+.f-menu::-webkit-scrollbar{
+    width: 0; /*隐藏滚动条*/
 }
 </style>

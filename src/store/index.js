@@ -10,6 +10,8 @@ const store = createStore({
       user: {},
       // 侧边栏宽度 在菜单组件 中间组件都用到width 所以定义到Vuex中
       asideWidth: "250px",
+      menus: [],
+      ruleNames: [],
     };
   },
   mutations: {
@@ -20,6 +22,13 @@ const store = createStore({
     // 展开/收起侧边
     handleAsideWidth(state) {
       state.asideWidth = state.asideWidth == "250px" ? "64px" : "250px";
+    },
+    // 菜单
+    SET_MENUS(state, menus) {
+      state.menus = menus;
+    },
+    SET_RULENAMES(state, ruleNames) {
+      state.ruleNames = ruleNames;
     },
   },
   actions: {
@@ -44,6 +53,9 @@ const store = createStore({
         getInfo()
           .then((res) => {
             commit("SET_USERINFO", res);
+            commit("SET_MENUS", res.menus);
+            commit("SET_RULENAMES", res.ruleNames);
+
             // f;
             resolve(res);
           })
