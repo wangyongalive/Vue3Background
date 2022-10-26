@@ -1,4 +1,4 @@
-import router from "@/router";
+import router, { addRoutes } from "@/router";
 import store from "./store";
 import { getToken } from "@/composables/auth.js";
 import { toast, showFullLoading, hideFullLoading } from "@/composables/util.js";
@@ -22,12 +22,14 @@ router.beforeEach(async (to, from, next) => {
   }
 
   // 如果用户登录了 就获取用户信息 并存储到vuex
+  let hasNewRoutes = false;
   if (token) {
     try {
       // try  catch 捕获await的错误
       // await 配合 async 处理异步操作
-      const res = await store.dispatch("getInfo");
-      console.log("res", res);
+      let { menus } = await store.dispatch("getInfo");
+      // 动态添加路由
+      hasNewRoutes = addRoutes(menus);
     } catch (err) {
       console.log(err + "  getInfo");
     }
@@ -35,8 +37,9 @@ router.beforeEach(async (to, from, next) => {
 
   // 设置页面标题
   document.title = `${to.meta.title ? to.meta.title : ""}   - xx后台管理系统`;
-  
-  next(); // 如果有next 一定要放行
+
+  // 如果有新的路由 则执行 next(to.fullPath)  否则执行  next()  不然会出现重定向
+  hasNewRoutes ? next(to.fullPath) : next(); // 如果有next 一定要放行
 });
 
 // 全局后置守卫
