@@ -8,8 +8,7 @@ const store = createStore({
     return {
       // 用户信息
       user: {},
-
-      // 侧边栏宽度
+      // 侧边栏宽度 在菜单组件 中间组件都用到width 所以定义到Vuex中
       asideWidth: "250px",
     };
   },
