@@ -12,18 +12,23 @@ router.beforeEach(async (to, from, next) => {
   // 没有登录,强制跳转到登录页
   if (!token && to.path != "/login") {
     toast("请先登录", "error");
-    return next({ path: "/login" });
+    return next({
+      path: "/login",
+    });
   }
 
   // 防止重复登录
   if (token && to.path == "/login") {
     toast("请勿重复登录", "error");
-    return next({ path: from.path ? from.path : "/" });
+    return next({
+      path: from.path ? from.path : "/",
+    });
   }
 
   // 如果用户登录了 就获取用户信息 并存储到vuex
   let hasNewRoutes = false;
-  if (token) {
+  // 如果用户的信息已经存在 则不再请求
+  if (token && Object.keys(store.state.user).length === 0) {
     try {
       // try  catch 捕获await的错误
       // await 配合 async 处理异步操作
@@ -38,7 +43,7 @@ router.beforeEach(async (to, from, next) => {
   // 设置页面标题
   document.title = `${to.meta.title ? to.meta.title : ""}   - xx后台管理系统`;
 
-  // 如果有新的路由 则执行 next(to.fullPath)  否则执行  next()  不然会出现重定向
+  // 如果有新的路由 则执行 next(to.fullPath)  否则执行  next()  不然会出现重定向 死循环
   hasNewRoutes ? next(to.fullPath) : next(); // 如果有next 一定要放行
 });
 

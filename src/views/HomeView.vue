@@ -2,7 +2,7 @@
   <div>
     <!-- 格式化 -->
     <pre>
-      {{ $store.state.user.username }}
+      {{ $store.state.user }}
     </pre>
   </div>
 </template>
