@@ -50,11 +50,20 @@
     </el-skeleton>
   </div>
   <Navs></Navs>
+
+  <el-row :gutter="20">
+    <el-col :span="12" :offset="0">
+      <IndexChart />
+    </el-col>
+    <el-col :span="12" :offset="0"></el-col>
+  </el-row>
+
 </template>
 <script setup>
 import { ref } from 'vue'
 import CountTo from '../components/CountTo.vue';
 import Navs from '../components/Navs.vue'
+import IndexChart from "../components/Echart.vue";
 import { getStatistics1 } from "@/api/index"
 const panels = ref([])
 getStatistics1().then(res => {
