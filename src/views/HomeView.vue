@@ -24,7 +24,7 @@
         </el-row>
       </template>
       <template #default>
-        <el-row>
+        <el-row :gutter="20">
           <el-col :span="6" :offset="0" v-for="(item, index) in panels" :key="index">
             <el-card shadow="hover" class="border-0">
               <template #header>
@@ -49,10 +49,12 @@
       </template>
     </el-skeleton>
   </div>
+  <Navs></Navs>
 </template>
 <script setup>
 import { ref } from 'vue'
 import CountTo from '../components/CountTo.vue';
+import Navs from '../components/Navs.vue'
 import { getStatistics1 } from "@/api/index"
 const panels = ref([])
 getStatistics1().then(res => {

@@ -54,6 +54,62 @@ const asyncRoutes = [
       title: "分类列表",
     },
   },
+  {
+    path: "/user/list",
+    name: "/user/list",
+    component: () => import("../views/user/list.vue"),
+    meta: {
+      title: "用户列表",
+    },
+  },
+  {
+    path: "/order/list",
+    name: "/order/list",
+    component: () => import("../views/order/list.vue"),
+    meta: {
+      title: "订单列表",
+    },
+  },
+  {
+    path: "/comment/list",
+    name: "/comment/list",
+    component: () => import("../views/comment/list.vue"),
+    meta: {
+      title: "评价列表",
+    },
+  },
+  {
+    path: "/image/list",
+    name: "/image/list",
+    component: () => import("../views/image/list.vue"),
+    meta: {
+      title: "图库列表",
+    },
+  },
+  {
+    path: "/notice/list",
+    name: "/notice/list",
+    component: () => import("../views/notice/list.vue"),
+    meta: {
+      title: "公告列表",
+    },
+  },
+  {
+    path: "/setting/base",
+    name: "/setting/base",
+    component: () => import("../views/setting/base.vue"),
+    meta: {
+      title: "配置",
+    },
+  },
+  {
+    path: "/coupon/list",
+    name: "/coupon/list",
+    component: () => import("../views/coupon/list.vue"),
+    meta: {
+      title: "优惠券列表",
+    },
+  },
 ];
 
 const router = createRouter({
