@@ -35,7 +35,8 @@
                 </div>
               </template>
               <span class="text-3xl font-bold text-gray-500">
-                {{ item.value }}
+                <!-- {{ item.value }} -->
+                <CountTo :value="item.value"></CountTo>
               </span>
               <el-divider></el-divider>
               <div class="flex justify-between items-center text-sm text-gray-500">
@@ -51,6 +52,7 @@
 </template>
 <script setup>
 import { ref } from 'vue'
+import CountTo from '../components/CountTo.vue';
 import { getStatistics1 } from "@/api/index"
 const panels = ref([])
 getStatistics1().then(res => {
