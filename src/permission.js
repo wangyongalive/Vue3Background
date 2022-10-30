@@ -3,6 +3,8 @@ import store from "./store";
 import { getToken } from "@/composables/auth.js";
 import { toast, showFullLoading, hideFullLoading } from "@/composables/util.js";
 
+// 外部变量 标记是否访问过getInfo
+let hasGetInfo = false;
 // 全局前置守卫
 router.beforeEach(async (to, from, next) => {
   // 显示loading
@@ -27,12 +29,12 @@ router.beforeEach(async (to, from, next) => {
 
   // 如果用户登录了 就获取用户信息 并存储到vuex
   let hasNewRoutes = false;
-  // 如果用户的信息已经存在 则不再请求
-  if (token && Object.keys(store.state.user).length === 0) {
+  if (token && !hasGetInfo) {
     try {
       // try  catch 捕获await的错误
       // await 配合 async 处理异步操作
       let { menus } = await store.dispatch("getInfo");
+      hasGetInfo = true; // 如果用户的信息已经存在 则不再请求
       // 动态添加路由
       hasNewRoutes = addRoutes(menus);
     } catch (err) {
