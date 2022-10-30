@@ -1,8 +1,9 @@
 <template>
     <div class="f-tag-list" :style="{ left: $store.state.asideWidth }">
-
-        <el-tabs v-model="editableTabsValue" type="card" style="min-width:100px" closable @tab-remove="removeTab">
-            <el-tab-pane v-for="item in editableTabs" :key="item.name" :label="item.title" :name="item.name">
+        <el-tabs v-model="activeTab" type="card" style="min-width:100px" @tab-remove="removeTab"
+            @tab-change="changeTab">
+            <el-tab-pane v-for="item in tabList" :key="item.path" :closable="item.path != '/'" :label="item.title"
+                :name="item.path">
             </el-tab-pane>
         </el-tabs>
         <el-dropdown class="f-tag-btn">
@@ -18,189 +19,69 @@
                 </el-dropdown-menu>
             </template>
         </el-dropdown>
+        <!-- {{ ff }} -->
     </div>
+    <div style="height:44px;"></div>
 </template>
 <script  setup>
-import { ref } from 'vue'
+import { ref } from "vue";
+import { useRoute, useRouter, onBeforeRouteUpdate } from "vue-router";
+import { useCookies } from '@vueuse/integrations/useCookies'
 
-let tabIndex = 2
-const editableTabsValue = ref('2')
-const editableTabs = ref([
-    {
-        title: 'Tab 1',
-        name: '1',
-        content: 'Tab 1 content',
-    },
-    {
-        title: 'Tab 2',
-        name: '2',
-        content: 'Tab 2 content',
-    },
-    {
-        title: 'Tab 1',
-        name: '1',
-        content: 'Tab 1 content',
-    },
-    {
-        title: 'Tab 2',
-        name: '2',
-        content: 'Tab 2 content',
-    },
-    {
-        title: 'Tab 1',
-        name: '1',
-        content: 'Tab 1 content',
-    },
-    {
-        title: 'Tab 2',
-        name: '2',
-        content: 'Tab 2 content',
-    }, {
-        title: 'Tab 1',
-        name: '1',
-        content: 'Tab 1 content',
-    },
-    {
-        title: 'Tab 2',
-        name: '2',
-        content: 'Tab 2 content',
-    }, {
-        title: 'Tab 1',
-        name: '1',
-        content: 'Tab 1 content',
-    },
-    {
-        title: 'Tab 2',
-        name: '2',
-        content: 'Tab 2 content',
-    }, {
-        title: 'Tab 1',
-        name: '1',
-        content: 'Tab 1 content',
-    },
-    {
-        title: 'Tab 2',
-        name: '2',
-        content: 'Tab 2 content',
-    }, {
-        title: 'Tab 1',
-        name: '1',
-        content: 'Tab 1 content',
-    },
-    {
-        title: 'Tab 2',
-        name: '2',
-        content: 'Tab 2 content',
-    }, {
-        title: 'Tab 1',
-        name: '1',
-        content: 'Tab 1 content',
-    },
-    {
-        title: 'Tab 2',
-        name: '2',
-        content: 'Tab 2 content',
-    }, {
-        title: 'Tab 1',
-        name: '1',
-        content: 'Tab 1 content',
-    },
-    {
-        title: 'Tab 2',
-        name: '2',
-        content: 'Tab 2 content',
-    }, {
-        title: 'Tab 1',
-        name: '1',
-        content: 'Tab 1 content',
-    },
-    {
-        title: 'Tab 2',
-        name: '2',
-        content: 'Tab 2 content',
-    }, {
-        title: 'Tab 1',
-        name: '1',
-        content: 'Tab 1 content',
-    },
-    {
-        title: 'Tab 2',
-        name: '2',
-        content: 'Tab 2 content',
-    }, {
-        title: 'Tab 1',
-        name: '1',
-        content: 'Tab 1 content',
-    },
-    {
-        title: 'Tab 2',
-        name: '2',
-        content: 'Tab 2 content',
-    }, {
-        title: 'Tab 1',
-        name: '1',
-        content: 'Tab 1 content',
-    },
-    {
-        title: 'Tab 2',
-        name: '2',
-        content: 'Tab 2 content',
-    }, {
-        title: 'Tab 1',
-        name: '1',
-        content: 'Tab 1 content',
-    },
-    {
-        title: 'Tab 2',
-        name: '2',
-        content: 'Tab 2 content',
-    }, {
-        title: 'Tab 1',
-        name: '1',
-        content: 'Tab 1 content',
-    },
-    {
-        title: 'Tab 2',
-        name: '2',
-        content: 'Tab 2 content',
-    }, {
-        title: 'Tab 1',
-        name: '1',
-        content: 'Tab 1 content',
-    },
-    {
-        title: 'Tab 2',
-        name: '2',
-        content: 'Tab 2 content',
-    },
-])
+const route = useRoute();
+const router = useRouter();
+const cookie = useCookies()
 
-const addTab = () => {
-    const newTabName = `${++tabIndex}`
-    editableTabs.value.push({
-        title: 'New Tab',
-        name: newTabName,
-        content: 'New Tab content',
-    })
-    editableTabsValue.value = newTabName
-}
-const removeTab = () => {
-    const tabs = editableTabs.value
-    let activeName = editableTabsValue.value
-    if (activeName === targetName) {
-        tabs.forEach((tab, index) => {
-            if (tab.name === targetName) {
-                const nextTab = tabs[index + 1] || tabs[index - 1]
-                if (nextTab) {
-                    activeName = nextTab.name
-                }
-            }
-        })
+
+// 获取刷新后激活的tab
+const activeTab = ref(route.path);
+const tabList = ref([
+    {
+        title: "后台首页",
+        path: "/",
+    },
+]);
+
+// 添加标签导航
+const addTab = (tab) => {
+    let noTab = !tabList.value.some(t => t.path == tab.path)
+    if (noTab) {
+        tabList.value.push(tab)
+        cookie.set("tabList", tabList.value)
     }
 
-    editableTabsValue.value = activeName
-    editableTabs.value = tabs.filter((tab) => tab.name !== targetName)
 }
+
+const changeTab = (t) => {
+    activeTab.value = t
+    router.push(t)
+}
+
+
+// 添加一个导航守卫，在当前位置即将更新时触发
+onBeforeRouteUpdate((to, from) => {
+    activeTab.value = to.path
+    addTab({
+        title: to.meta.title,
+        path: to.path
+    })
+
+})
+
+// 初始化标签导航列表  从cookie中获取数据
+function initTabList() {
+    let tbs = cookie.get("tabList")
+    if (tbs) {
+        tabList.value = tbs
+    }
+}
+
+initTabList()
+
+
+let ff = 11111; // 在模板中可以使用 但是数值改变 模板不会变 非响应式变化
+
+const removeTab = () => { };
 </script>
 
 <style lang="scss" scoped>
@@ -219,6 +100,10 @@ const removeTab = () => {
 
 :deep .el-tabs--card {
     height: 32px;
+
+    .el-tabs__header {
+        border: 0 !important;
+    }
 
     .el-tabs__header .el-tabs__nav {
         @apply border-0;
