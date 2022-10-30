@@ -32,6 +32,8 @@ import FTagList from './components/FTagList.vue';
   transition: all 0.2s;
 }
 
+/* 动画采用的是animate.css  cdn 选择对应类的class 拷贝*/
+
 .fade-enter-from {
   opacity: 0;
   -webkit-transform: translate3d(0, -100%, 0);

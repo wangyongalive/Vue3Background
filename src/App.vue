@@ -7,6 +7,9 @@ import { RouterView } from 'vue-router'
 </template>
 
 <style>
+body {
+  @apply bg-gray-100;
+}
 /* 修改进度条的颜色 */
 #nprogress .bar{
   background: #f4f4f4 !important;
