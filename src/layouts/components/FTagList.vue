@@ -81,7 +81,22 @@ initTabList()
 
 let ff = 11111; // 在模板中可以使用 但是数值改变 模板不会变 非响应式变化
 
-const removeTab = () => { };
+const removeTab = (t) => {
+    let tabs = tabList.value
+    let a = activeTab.value
+    if (a == t) {
+        let tabIndex = tabs.findIndex((tab) => tab.path == t)
+        let nextTab = tabs[tabIndex + 1] || tabs[tabIndex - 1] // 下一个tab
+        if (nextTab) {
+            a = nextTab.path
+        }
+    }
+
+    activeTab.value = a; // 拿到激活的path
+    tabList.value = tabList.value.filter(tab => tab.path != t)
+
+    cookie.set('tabList', tabList.value)
+};
 </script>
 
 <style lang="scss" scoped>

@@ -2,7 +2,8 @@
     <!-- 动态设置宽度 -->
     <div class="f-menu" :style="{ width: $store.state.asideWidth }">
         <!-- collapse-transition="false" 关闭菜单动画效果 -->
-        <el-menu unique-opened :collapse="isCollapse"  :default-active="defaultActive" :collapse-transition="false" router class="border-0">
+        <el-menu unique-opened :collapse="isCollapse" :default-active="defaultActive" :collapse-transition="false"
+            router class="border-0" @select="handleSelect">
             <template v-for="(item, index) in  asideMenus" :key="index">
                 <el-sub-menu v-if="item.child && item.child.length > 0" :index="item.name">
                     <template #title>
@@ -32,8 +33,8 @@
     </div>
 </template>
 <script setup>
-import { computed,ref } from "vue";
-import { useRouter,useRoute } from "vue-router";
+import { computed, ref } from "vue";
+import { useRouter, useRoute } from "vue-router";
 import { useStore } from "vuex";
 const router = useRouter();
 const route = useRoute();
@@ -46,11 +47,12 @@ const defaultActive = ref(route.path)
 const isCollapse = computed(() => !(store.state.asideWidth == "250px"));
 
 // 菜单 不用computed也可以 
-const asideMenus = computed(()=>store.state.menus)
+const asideMenus = computed(() => store.state.menus)
 
 // 路由跳转
 const handleSelect = (e) => {
-    router.push(e);
+    // router.push(e);
+    defaultActive.value = e
 };
 </script>
 
@@ -63,7 +65,9 @@ const handleSelect = (e) => {
     /* overflow: auto  会根据实际情况显示滚动条*/
     @apply fixed top-[64px] left-0 bottom-0 overflow-x-hidden overflow-y-auto shadow-md bg-light-50;
 }
-.f-menu::-webkit-scrollbar{
-    width: 0; /*隐藏滚动条*/
+
+.f-menu::-webkit-scrollbar {
+    width: 0;
+    /*隐藏滚动条*/
 }
 </style>
