@@ -9,7 +9,7 @@
         </div>
       </div>
     </template>
-    <div ref="el"  style="width: 100%;height: 300px;"></div>
+    <div ref="el" style="width: 100%;height: 300px;"></div>
   </el-card>
 </template>
 <script setup>
@@ -42,8 +42,11 @@ const el = ref(null)
 
 let myChart = null
 onMounted(() => {
-  myChart = echarts.init(el.value);
-  getData()
+  if (el.value) {
+    myChart = echarts.init(el.value);
+    getData()
+  }
+
 })
 
 // 优化1: 销毁实例
