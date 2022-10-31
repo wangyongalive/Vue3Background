@@ -8,17 +8,36 @@
 
     </div>
     <div class="bottom">
+      <!-- current-page 当前页数  @current-page 改变时触发 -->
       <el-pagination background layout="prev, next" :total="total" :page-size="limit" @current-change="getData"
         :current-page="currentPage" />
     </div>
   </el-aside>
+
+  <form-drawer title="新增" ref="formDrawerRef" @submit="handleSubmit">
+    <el-form :model="form" ref="formRef" :rules="rules" label-width="80px" :inline="false">
+      <el-form-item label="分类名称" prop="name">
+        <el-input v-model="form.name"></el-input>
+      </el-form-item>
+      <el-form-item label="排序" prop="order">
+        <el-input-number v-model="form.order" :min="0" :max="1000"></el-input-number>
+      </el-form-item>
+    </el-form>
+
+  </form-drawer>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { reactive, ref } from "vue";
 import AsideList from './AsideList.vue'
+import FormDrawer from './FormDrawer.vue'
+import { toast } from '@/composables/util'
+
+
+
 import {
-  getImageClassList
+  getImageClassList,
+  createImageClass
 } from "@/api/image_class.js"
 
 // 加载动画
@@ -51,6 +70,51 @@ function getData(limit) {
 getData(currentPage.value)
 
 
+// 打开抽屉
+const formDrawerRef = ref(null)
+const handleCreate = () => {
+  formDrawerRef.value.open()
+}
+// 提交表单
+const handleSubmit = () => {
+  console.log(formRef.value)
+  formRef.value.validate((validate) => {
+    if (!validate) return;
+    formDrawerRef.value.showLoading()
+    createImageClass(form).then(res => {
+      toast('新增成功')
+      getData(1)
+      formDrawerRef.value.close()
+    }).catch(() => { })
+      .finally(() => {
+        formDrawerRef.value.hideLoading()
+      })
+  })
+}
+
+const form = reactive({
+  name: "111",
+  order: 50
+})
+const rules = {
+  name: [
+    {
+      required: true,
+      message: "图库分类名称不能为空",
+      trigger: "blur",
+    },
+  ]
+}
+
+const formRef = ref(null)
+
+
+
+
+// 向外暴露方法
+defineExpose({
+  handleCreate
+})
 
 </script>
 
