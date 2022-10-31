@@ -10,12 +10,12 @@
       <slot />
     </span>
     <!-- margin-left: auto 之后都推向最右边 -->
-    <el-button text type="primary" class="ml-auto px-1" @click="$emit('edit')">
+    <el-button text type="primary" class="ml-auto px-1" @click.stop="$emit('edit')">
       <el-icon :size="12">
         <edit />
       </el-icon>
     </el-button>
-    <el-button text type="primary" class="px-1" @click="$emit('delete')">
+    <el-button text type="primary" class="px-1" @click.stop="$emit('delete')">
       <el-icon :size="12">
         <close />
       </el-icon>

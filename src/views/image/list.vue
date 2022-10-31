@@ -2,7 +2,7 @@
   <!-- 布局容器 -->
   <el-container class="bg-white rounded" :style="{ height: (h + 'px') }">
     <el-header class="image-header">
-      <el-button size="small" @click.stop="handleOpenCreate">新增图片分类</el-button>
+      <el-button size="small" @click.stop="handleOpenCreate" type="primary">新增图片分类</el-button>
     </el-header>
     <el-container>
       <image-aside ref="ImageAsideRef"></image-aside>

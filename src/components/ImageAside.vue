@@ -1,8 +1,8 @@
 <template>
   <el-aside width="220px" class="image-aside" v-loading="loading">
     <div class="top">
-      <!-- 动态添加active类class -->
-      <aside-list v-for="(item, index) in list" :key="index" :active="activeId == item.id">
+      <!-- 动态添加active类class emit-- edit  -->
+      <aside-list v-for="(item, index) in list" :key="index" :active="activeId == item.id" @edit="handleEdit(item)">
         {{ item.name }}
       </aside-list>
 
@@ -14,7 +14,7 @@
     </div>
   </el-aside>
 
-  <form-drawer title="新增" ref="formDrawerRef" @submit="handleSubmit">
+  <form-drawer :title="drawTitle" ref="formDrawerRef" @submit="handleSubmit">
     <el-form :model="form" ref="formRef" :rules="rules" label-width="80px" :inline="false">
       <el-form-item label="分类名称" prop="name">
         <el-input v-model="form.name"></el-input>
@@ -28,16 +28,16 @@
 </template>
 
 <script setup>
-import { reactive, ref } from "vue";
+import { computed, reactive, ref } from "vue";
 import AsideList from './AsideList.vue'
 import FormDrawer from './FormDrawer.vue'
 import { toast } from '@/composables/util'
 
 
-
 import {
   getImageClassList,
-  createImageClass
+  createImageClass,
+  updateImageClass
 } from "@/api/image_class.js"
 
 // 加载动画
@@ -70,20 +70,33 @@ function getData(limit) {
 getData(currentPage.value)
 
 
-// 打开抽屉
+// 打开抽屉 
 const formDrawerRef = ref(null)
+const editId = ref(0)
+// 通过editId是否有值来判断 标题的值
+const drawTitle = computed(() => editId.value ? '修改' : '新增')
+
+// 新增表单
 const handleCreate = () => {
+  editId.value = 0
+  form.name = ''
+  form.order = 50
   formDrawerRef.value.open()
 }
+
 // 提交表单
 const handleSubmit = () => {
-  console.log(formRef.value)
+
   formRef.value.validate((validate) => {
     if (!validate) return;
     formDrawerRef.value.showLoading()
-    createImageClass(form).then(res => {
-      toast('新增成功')
-      getData(1)
+
+    const fun = editId.value ? updateImageClass(editId.value, form) : createImageClass(form)
+
+    fun.then(res => {
+      toast(drawTitle.value + '成功')
+      // 新增就跳转到第一页 修改还是在当前页
+      getData(editId.value ? currentPage.value : 1)
       formDrawerRef.value.close()
     }).catch(() => { })
       .finally(() => {
@@ -108,8 +121,13 @@ const rules = {
 
 const formRef = ref(null)
 
-
-
+// 编辑表单
+const handleEdit = (row) => {
+  editId.value = row.id;
+  form.name = row.name;
+  form.order = row.order;
+  formDrawerRef.value.open()
+}
 
 // 向外暴露方法
 defineExpose({
