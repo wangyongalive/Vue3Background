@@ -7,7 +7,10 @@
       </aside-list>
 
     </div>
-    <div class="bottom">分页区域</div>
+    <div class="bottom">
+      <el-pagination background layout="prev, next" :total="total" :page-size="limit" @current-change="getData"
+        :current-page="currentPage" />
+    </div>
   </el-aside>
 </template>
 
@@ -23,10 +26,18 @@ const loading = ref(false)
 const list = ref([])
 const activeId = ref(0)
 
+
+// 分页
+const currentPage = ref(1)
+const total = ref(0)
+const limit = ref(10)
+
 // 获取数据
-function getData() {
+function getData(limit) {
+  currentPage.value = limit;
   loading.value = true;  // 开始加载动画
-  getImageClassList(1).then(res => {
+  getImageClassList(limit).then(res => {
+    total.value = res.totalCount
     list.value = res.list;
     let item = list.value[0]
     if (item) { // 如果item存在
@@ -37,7 +48,7 @@ function getData() {
   })
 }
 
-getData()
+getData(currentPage.value)
 
 
 
