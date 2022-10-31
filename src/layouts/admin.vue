@@ -5,6 +5,7 @@
     </el-header>
     <el-container>
       <el-aside :width="$store.state.asideWidth">
+        <!-- 固定定位 -->
         <f-menu></f-menu>
       </el-aside>
       <el-main>

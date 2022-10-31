@@ -4,6 +4,7 @@
       <div class="flex justify-between">
         <span class="text-sm">订单统计</span>
         <div>
+          <!-- click.stop阻止事件传播 -->
           <el-check-tag v-for="(item, index) in options" :key="index" :checked="current == item.value"
             style="margin-right: 8px" @click.stop="handleChoose(item.value)">{{ item.text }}</el-check-tag>
         </div>
