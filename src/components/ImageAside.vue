@@ -2,7 +2,8 @@
   <el-aside width="220px" class="image-aside" v-loading="loading">
     <div class="top">
       <!-- 动态添加active类class emit-- edit  -->
-      <aside-list v-for="(item, index) in list" :key="index" :active="activeId == item.id" @edit="handleEdit(item)">
+      <aside-list v-for="(item, index) in list" :key="index" :active="activeId == item.id" @edit="handleEdit(item)"
+        @delete="handleDelete(item.id)">
         {{ item.name }}
       </aside-list>
 
@@ -37,7 +38,8 @@ import { toast } from '@/composables/util'
 import {
   getImageClassList,
   createImageClass,
-  updateImageClass
+  updateImageClass,
+  deleteImageClass
 } from "@/api/image_class.js"
 
 // 加载动画
@@ -127,6 +129,17 @@ const handleEdit = (row) => {
   form.name = row.name;
   form.order = row.order;
   formDrawerRef.value.open()
+}
+
+//  删除表达
+const handleDelete = (id) => {
+  loading.value = true;
+  deleteImageClass(id).then(res => {
+    toast("删除成功")
+    getData(1)
+  }).finally(() => {
+    loading.value = false;
+  })
 }
 
 // 向外暴露方法

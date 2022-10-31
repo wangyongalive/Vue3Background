@@ -12,3 +12,7 @@ export function createImageClass(data) {
 export function updateImageClass(id, data) {
   return request.post("/admin/image_class/" + id, data);
 }
+
+export function deleteImageClass(id) {
+  return request.post("/admin/image_class/" + id + "/delete");
+}
