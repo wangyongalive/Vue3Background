@@ -1,19 +1,45 @@
 <template>
-  <el-aside width="220px" class="image-aside">
+  <el-aside width="220px" class="image-aside" v-loading="loading">
     <div class="top">
-      <aside-list>
-        分类标题
+      <!-- 动态添加active类class -->
+      <aside-list v-for="(item, index) in list" :key="index" :active="activeId == item.id">
+        {{ item.name }}
       </aside-list>
-      <aside-list active>
-        分类标题
-      </aside-list>
+
     </div>
     <div class="bottom">分页区域</div>
   </el-aside>
 </template>
 
 <script setup>
+import { ref } from "vue";
 import AsideList from './AsideList.vue'
+import {
+  getImageClassList
+} from "@/api/image_class.js"
+
+// 加载动画
+const loading = ref(false)
+const list = ref([])
+const activeId = ref(0)
+
+// 获取数据
+function getData() {
+  loading.value = true;  // 开始加载动画
+  getImageClassList(1).then(res => {
+    list.value = res.list;
+    let item = list.value[0]
+    if (item) { // 如果item存在
+      activeId.value = item.id;
+    }
+  }).finally(() => {
+    loading.value = false // 无论失败还是成功 都关闭动画
+  })
+}
+
+getData()
+
+
 
 </script>
 
