@@ -37,6 +37,7 @@ defineProps({
   }
 })
 
+// emit中的事件不会出现在调试器中的事件监听中
 defineEmits(["edit", "delete"])
 </script>
 <style scoped lang="scss">

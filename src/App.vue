@@ -20,9 +20,9 @@ body {
 
 /* 全局滚动条 */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 6px;
   /*纵向滚动条*/
-  height: 6px;
+  height: 4px;
   /*横向滚动条*/
 }
 
