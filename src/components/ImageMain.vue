@@ -2,8 +2,29 @@
 <template>
   <el-main class="image-main" v-loading="loading">
     <!-- 页面编写技巧：写多个标签模拟大量数据的情况 -->
-    <div class="top">
-      <div v-for="i in list" :key="i">{{ i }}</div>
+    <div class="top p-3">
+      <!-- <div v-for="i in list" :key="i">{{ i }}</div>
+       -->
+      <el-row :gutter="10" >
+        <el-col :span="6" :offset="0" v-for="(item, index) in list" :key="index">
+          <el-card shadow="always" :body-style="{ padding: '0' }" class="relative mb-3">
+            <!-- card body -->
+            <el-image :src="item.url" fit="fill" :lazy="true" class="h-[150px] w-full"></el-image>
+            <!-- 文字相对定位 -->
+            <div class="image-title">{{ item.name }}</div>
+            <div class="flex justify-center items-center p-2">
+              <el-button type="primary" size="small" text>
+                重命名
+              </el-button>
+              <el-button type="primary" size="small" text>
+                删除
+              </el-button>
+            </div>
+          </el-card>
+
+        </el-col>
+      </el-row>
+
     </div>
     <div class="bottom">
       <!-- current-page 当前页数  @current-page 改变时触发 -->
@@ -81,6 +102,12 @@ defineExpose({
     /* left:0;  right:0; 可以使内容撑开*/
     // right: 0;
     @apply flex items-center justify-center absolute bottom-0 left-0 right-0 h-50px;
+  }
+
+  .image-title{
+    @apply absolute top-122px left-[-1px] right-[-1px] text-sm  truncate text-gray-100 bg-opacity-50 bg-gray-800 
+    px-2 py-1
+    ;
   }
 }
 </style>
