@@ -12,6 +12,7 @@ import "./permission";
 const app = createApp(App);
 app.use(router);
 app.use(store);
+// 引入所有的icon
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component);
 }

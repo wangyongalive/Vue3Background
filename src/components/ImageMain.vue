@@ -42,16 +42,28 @@
         v-model:current-page="currentPage" />
     </div>
   </el-main>
+
+  <!-- ImageMain中的抽屉  没有用到提交功能 直接使用最简单的-->
+  <el-drawer v-model="drawer" title="上传图片">
+    <!-- data参数 success 上传成功的回调函数-->
+    <upload-file :data="{ image_class_id }" @success="handleUploadSuccess"></upload-file>
+  </el-drawer>
+
 </template>
 
 <script setup>
 import { ref } from "vue";
+import UploadFile from '@/components/UploadFile.vue'
 import {
   getImageList, updateImage,
   deleteImage
 } from "@/api/image.js";
-
 import { showPrompt, toast } from '@/composables/util.js'
+
+// 上传图片抽屉
+const drawer = ref(false)
+// 打开抽屉 导出供外部使用
+const openUploadFile = () => drawer.value = true
 
 
 // 加载动画
@@ -110,8 +122,12 @@ const handleDelete = (id) => {
   })
 }
 
+// 上传成功
+const handleUploadSuccess = () => getData()
+
 defineExpose({
   loadData,
+  openUploadFile
 });
 </script>
 

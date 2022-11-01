@@ -3,6 +3,7 @@
   <el-container class="bg-white rounded" :style="{ height: (h + 'px') }">
     <el-header class="image-header">
       <el-button size="small" @click.stop="handleOpenCreate" type="primary">新增图片分类</el-button>
+      <el-button size="small" @click.stop="handleOpenUpload" type="warning">点击上传</el-button>
     </el-header>
     <el-container>
       <!-- 兄弟组件 借助父组件进行通信 -->
@@ -26,6 +27,9 @@ const handleOpenCreate = () => ImageAsideRef.value.handleCreate()
 
 const ImageMainRef = ref(null)
 const handleAsideChange = (image_class_id) => ImageMainRef.value.loadData(image_class_id)
+
+// 点击上传
+const handleOpenUpload = () => ImageMainRef.value.openUploadFile()
 </script>
 
 <style lang="scss">
