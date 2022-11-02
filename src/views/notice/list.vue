@@ -1,30 +1,29 @@
 <template>
-  <div>
-    <el-card shadow="always">
-      <!-- 新增 | 刷新  -->
-      <div class="flex justify-center justify-between mb-4">
-        <el-button type="primary" size="small">新增</el-button>
-        <el-tooltip content="刷新数据" placement="top" effect="dark">
-          <el-button text size="default" @click.stop="handleReresh">
-            <el-icon :size="20">
-              <refresh></refresh>
-            </el-icon>
-          </el-button>
-        </el-tooltip>
-      </div>
-    </el-card>
 
+  <el-card shadow="always">
+    <!-- 新增 | 刷新  -->
+    <div class="flex justify-center justify-between mb-4">
+      <el-button type="primary" size="small" @click.stop="handleCreate">新增</el-button>
+      <el-tooltip content="刷新数据" placement="top" effect="dark">
+        <el-button text size="default" @click.stop="handleReresh">
+          <el-icon :size="20">
+            <refresh></refresh>
+          </el-icon>
+        </el-button>
+      </el-tooltip>
+    </div>
     <el-table :data="tableData" stripe style="width: 100%" v-loading="loading">
       <el-table-column prop="title" label="公告标题" />
       <el-table-column prop="create_time" label="发布时间" />
       <el-table-column label="操作" width="180" align="center">
         <template #default="scope">
-          <el-button type="primary" size="default">修改</el-button>
+          <el-button type="primary" size="default" text @click.stop="hanleEdit(scope.row)">修改</el-button>
           <el-popconfirm title="是否删除该分类?" confirm-button-text="确认" cancel-button-text="取消"
             @confirm="hanleDelete(scope.row.id)">
             <template #reference>
               <el-button text type="primary">
                 删除
+                {{ scope.rows }}
               </el-button>
             </template>
           </el-popconfirm>
@@ -36,15 +35,28 @@
       <!-- current-page 当前页数  @current-page 改变时触发 -->
       <el-pagination background layout="prev, pager,next" :total="total" :page-size="limit" @current-change="getData"
         v-model:current-page="currentPage" />
+
+      <form-drawer ref="formDrawerRef" :title="drawTitle" @submit="handleSubmit">
+        <el-form :model="form" ref="formRef" :rules="rules" label-width="80px" :inline="false">
+          <el-form-item label="公告标题" prop="title">
+            <el-input v-model="form.title" placeholder="公告标题"></el-input>
+          </el-form-item>
+          <el-form-item label="公告内容" prop="content">
+            <el-input v-model="form.content" placeholder="公告内容" type="textarea" :rows="5"></el-input>
+          </el-form-item>
+        </el-form>
+
+      </form-drawer>
     </div>
-  </div>
+  </el-card>
 
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { getNotice } from "@/api/notice";
-
+import { computed, reactive, ref } from "vue";
+import { getNotice, createNotice, updateNotice, deleteNotice } from "@/api/notice";
+import FormDrawer from "../../components/FormDrawer.vue";
+import { toast } from "@/composables/util";
 
 // 加载动画
 const loading = ref(false);
@@ -54,6 +66,31 @@ const tableData = ref([]);
 const currentPage = ref(1);
 const total = ref(0);
 const limit = ref(10);
+
+// 区别新增和编辑
+const editId = ref(0)
+const drawTitle = computed(() => editId.value ? '修改' : '新增')
+
+// 表单
+const formDrawerRef = ref(null)
+const formRef = ref(null)
+const form = reactive({
+  title: "标题",
+  content: '内容'
+})
+
+const rules = {
+  title: [{
+    required: true,
+    message: "公告名称不能为空",
+    trigger: "blur",
+  }],
+  content: [{
+    required: true,
+    message: "公告内容不能为空",
+    trigger: "blur",
+  }]
+}
 
 // 获取数据
 function getData(page = currentPage.value) {
@@ -70,13 +107,71 @@ function getData(page = currentPage.value) {
 
 getData(currentPage.value);
 
-const hanleDelete = () => {
-  console.log("hanleDelete");
+// 重置表单
+const resetForm = (row) => {
+  if (formRef.value) {
+    // 清理某个字段的表单验证信息
+    formRef.value.clearValidate()
+  }
+  if (row) {
+    for (const key in form) {
+      form[key] = row[key]
+    }
+  }
+}
+
+// 新增
+const handleCreate = () => {
+  editId.value = 0
+  resetForm({
+    title: "",
+    content: ''
+  })
+  formDrawerRef.value.open()
+}
+
+// 删除
+const hanleDelete = (id) => {
+  loading.value = true;
+  deleteNotice(id).then(res => {
+    toast("删除成功")
+    getData(1)
+  })
+    .finally(() => {
+      loading.value = false;
+    })
 };
 
+// 编辑
+const hanleEdit = (row) => {
+  editId.value = row.id;
+  resetForm(row)
+  formDrawerRef.value.open()
+}
+
+// 刷新按钮
 const handleReresh = () => {
   getData()
 }
 
+// 提交表单
+const handleSubmit = () => {
+  formRef.value.validate((valid) => {
+    if (!valid) return;
+    formDrawerRef.value.showLoading()
+
+    const fn = editId.value ? updateNotice(editId.value, form) : createNotice(form);
+
+    fn.then(res => {
+      toast(drawTitle.value + "成功")
+      // 修改刷新当前页 新增刷新第一页
+      getData(editId.value ? currentPage.value : 1)
+      formDrawerRef.value.close()
+    })
+      .finally(() => {
+        formDrawerRef.value.hideLoading()
+      })
+  })
+}
 
 </script>
