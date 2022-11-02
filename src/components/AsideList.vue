@@ -17,15 +17,18 @@
     </el-button>
 
     <!-- 确认时emit('delete') -->
-    <el-popconfirm title="是否删除该分类?" confirm-button-text="确认" cancel-button-text="取消" @confirm="$emit('delete')">
-      <template #reference>
-        <el-button text type="primary" class="px-1">
-          <el-icon :size="12">
-            <close />
-          </el-icon>
-        </el-button>
-      </template>
-    </el-popconfirm>
+    <!-- 套一层span 阻止事件冒泡 -->
+    <span @click.stop="() => { }">
+      <el-popconfirm title="是否删除该分类?" confirm-button-text="确认" cancel-button-text="取消" @confirm="$emit('delete')">
+        <template #reference>
+          <el-button text type="primary" class="px-1">
+            <el-icon :size="12">
+              <close />
+            </el-icon>
+          </el-button>
+        </template>
+      </el-popconfirm>
+    </span>
 
   </div>
 </template>
