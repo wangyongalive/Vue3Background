@@ -1,6 +1,19 @@
 <template>
 
   <el-card shadow="always">
+    <!-- 搜索  small:表单中的所有子组件都继承了该表单的 size 属性-->
+    <el-form :model="searchForm" ref="searchFormRef" :rules="rules" label-width="80px" inline size="small"
+      class="flex items-center justify-between">
+      <el-form-item label="关键词">
+        <el-input v-model="searchForm.keyword" placeholder="管理员昵称" clearable></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click.stop="getData(1)">搜索</el-button>
+        <el-button @click.stop="restSearchForm">重置</el-button>
+      </el-form-item>
+    </el-form>
+
+
     <!-- 新增 | 刷新  -->
     <div class="flex justify-center justify-between mb-4">
       <el-button type="primary" size="small" @click.stop="handleCreate">新增</el-button>
@@ -83,6 +96,16 @@ import { getManagerList } from "@/api/manager";
 import FormDrawer from "../../components/FormDrawer.vue";
 import { toast } from "@/composables/util";
 
+// 查询表单
+const searchForm = reactive({
+  keyword: ''
+})
+// 清空表单
+const restSearchForm = () => {
+  searchForm.keyword = ''
+  getData()
+}
+
 // 加载动画
 const loading = ref(false);
 const tableData = ref([]);
@@ -120,7 +143,7 @@ const rules = {
 // 获取数据
 function getData(page = currentPage.value) {
   loading.value = true; // 开始加载动画
-  getManagerList(page)
+  getManagerList(page, searchForm)
     .then((res) => {
       total.value = res.totalCount;
       tableData.value = res.list;

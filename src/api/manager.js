@@ -26,6 +26,7 @@ export function getManagerList(
     keyword: "ceshi",
   }
 ) {
+  console.log(page, query);
   let q = [];
   for (const key in query) {
     if (query[key] != null) {
