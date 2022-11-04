@@ -18,3 +18,20 @@ export function logout() {
 export function updatepassword(data) {
   return request.post("/admin/updatepassword", data);
 }
+
+export function getManagerList(
+  page,
+  query = {
+    limit: 10,
+    keyword: "ceshi",
+  }
+) {
+  let q = [];
+  for (const key in query) {
+    if (query[key] != null) {
+      q.push(`${key}=${query[key]}`);
+    }
+  }
+  q = q.join("&");
+  return request.get(`/admin/manager/${page}?${q}`);
+}
