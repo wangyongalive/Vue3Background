@@ -13,7 +13,6 @@
       </el-form-item>
     </el-form>
 
-
     <!-- 新增 | 刷新  -->
     <div class="flex justify-center justify-between mb-4">
       <el-button type="primary" size="small" @click.stop="handleCreate">新增</el-button>
@@ -49,22 +48,27 @@
       <el-table-column label="状态" width="120">
         <!-- 解构 -->
         <template #default="{ row }">
-          <el-switch v-model="row.status" :active-value="1" :inactive-value="0">
+          <!-- $event可以获取默认传递的值 $event不一定代表原生事件 -->
+          <el-switch v-model="row.status" :active-value="1" :inactive-value="0" :loading="row.statusLoading"
+            :disabled="row.super == 1" @change="handleStatusChange($event, row)">
           </el-switch>
         </template>
       </el-table-column>
       <el-table-column label="操作" width="180" align="center">
         <template #default="scope">
-          <el-button type="primary" size="default" text @click.stop="hanleEdit(scope.row)">修改</el-button>
-          <el-popconfirm title="是否删除该管理员?" confirm-button-text="确认" cancel-button-text="取消"
-            @confirm="hanleDelete(scope.row.id)">
-            <template #reference>
-              <el-button text type="primary">
-                删除
-                {{ scope.rows }}
-              </el-button>
-            </template>
-          </el-popconfirm>
+          <small v-if="scope.row.super == 1" class="text-sm text-gray-500">暂无操作</small>
+          <div v-else>
+            <el-button type="primary" size="default" text @click.stop="hanleEdit(scope.row)">修改</el-button>
+            <el-popconfirm title="是否删除该管理员?" confirm-button-text="确认" cancel-button-text="取消"
+              @confirm="hanleDelete(scope.row.id)">
+              <template #reference>
+                <el-button text type="primary">
+                  删除
+                  {{ scope.rows }}
+                </el-button>
+              </template>
+            </el-popconfirm>
+          </div>
         </template>
       </el-table-column>
     </el-table>
@@ -92,7 +96,7 @@
 
 <script setup>
 import { computed, reactive, ref } from "vue";
-import { getManagerList } from "@/api/manager";
+import { getManagerList, updateManagerStatus } from "@/api/manager";
 import FormDrawer from "../../components/FormDrawer.vue";
 import { toast } from "@/composables/util";
 
@@ -146,7 +150,10 @@ function getData(page = currentPage.value) {
   getManagerList(page, searchForm)
     .then((res) => {
       total.value = res.totalCount;
-      tableData.value = res.list;
+      tableData.value = res.list.map((o) => {
+        o.statusLoading = false;  // switc 默认没有动画
+        return o;
+      });
     })
     .finally(() => {
       loading.value = false; // 无论失败还是成功 都关闭动画
@@ -220,6 +227,24 @@ const handleSubmit = () => {
         formDrawerRef.value.hideLoading()
       })
   })
+}
+
+
+
+// 修改状态
+const handleStatusChange = (status, row) => {
+  row.statusLoading = true; // swtich加载动画
+  updateManagerStatus(row.id, status)
+    .then((res) => {
+      toast('修改状态成功!')
+      row.status = status // 修改状态
+    }).
+    catch(() => {
+      row.status = row.status == 0 ? 1 : 0;
+    })
+    .finally(() => {
+      row.statusLoading = false;
+    })
 }
 
 </script>

@@ -26,7 +26,6 @@ export function getManagerList(
     keyword: "ceshi",
   }
 ) {
-  console.log(page, query);
   let q = [];
   for (const key in query) {
     if (query[key] != null) {
@@ -35,4 +34,11 @@ export function getManagerList(
   }
   q = q.join("&");
   return request.get(`/admin/manager/${page}?${q}`);
+}
+
+// 修改管理员状态
+export function updateManagerStatus(id, status) {
+  return request.post(`/admin/manager/${id}/update_status`, {
+    status,
+  });
 }
