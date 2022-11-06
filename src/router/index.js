@@ -26,6 +26,14 @@ const routes = [
       title: "页面不存在",
     },
   },
+  {
+    path: "/test",
+    name: "Test",
+    component: () => import("../views/test.vue"),
+    meta: {
+      title: "test",
+    },
+  },
 ];
 
 // 动态路由，用于匹配菜单动态添加路由

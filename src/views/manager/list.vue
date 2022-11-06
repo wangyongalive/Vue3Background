@@ -74,7 +74,7 @@
     </el-table>
 
     <div class="flex justify-center mt-5">
-      <!-- current-page 当前页数  @current-page 改变时触发 -->
+      <!-- current-page 当前页数  @current-page current-page改变时触发 -->
       <el-pagination background layout="prev, pager,next" :total="total" :page-size="limit" @current-change="getData"
         v-model:current-page="currentPage" />
 
@@ -87,7 +87,9 @@
             <el-input v-model="form.password" placeholder="密码"></el-input>
           </el-form-item>
           <el-form-item label="头像" prop="avatar">
-            <el-input v-model="form.avatar" placeholder="头像"></el-input>
+            <!-- <el-input v-model="form.avatar" placeholder="头像"></el-input> -->
+            <!-- 头像组件 -->
+            <choose-image></choose-image>
           </el-form-item>
           <el-form-item label="所属管理员" prop="role_id">
             <el-select v-model="form.role_id" placeholder="请选择所属管理员">
@@ -109,8 +111,9 @@
 
 <script setup>
 import { computed, reactive, ref } from "vue";
-import { getManagerList, updateManagerStatus, createManager, updateManager, deleteManager } from "@/api/manager";
 import FormDrawer from "../../components/FormDrawer.vue";
+import ChooseImage from "@/components/ChooseImage.vue";
+import { getManagerList, updateManagerStatus, createManager, updateManager, deleteManager } from "@/api/manager";
 import { toast } from "@/composables/util";
 
 // 查询表单
@@ -168,7 +171,7 @@ function getData(page = currentPage.value) {
     .then((res) => {
       total.value = res.totalCount;
       tableData.value = res.list.map((o) => {
-        o.statusLoading = false;  // switc 默认没有动画
+        o.statusLoading = false;  // switch 默认没有动画
         return o;
       });
       roles.value = res.roles

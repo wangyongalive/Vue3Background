@@ -7,7 +7,9 @@
        -->
       <el-row :gutter="10">
         <el-col :span="6" :offset="0" v-for="(item, index) in list" :key="index">
-          <el-card shadow="always" :body-style="{ padding: '0' }" class="relative mb-3">
+          <!-- border-blue-500 动态类 -->
+          <el-card shadow="always" :body-style="{ padding: '0' }" class="relative mb-3"
+            :class="{ 'border-blue-500': item.checkd }">
             <!-- card body -->
             <!-- :initial-index="0"
             :preview-src-list="[item.url]"
@@ -18,13 +20,15 @@
             <!-- 文字相对定位 -->
             <div class="image-title">{{ item.name }}</div>
             <div class="flex justify-center items-center p-2">
+              <el-checkbox v-model="item.checkd" @change="handleChoseChange(item)"></el-checkbox>
               <el-button type="primary" size="small" text @click.stop="handleEdit(item)">
                 重命名
               </el-button>
               <el-popconfirm title="是否删除该图片?" confirm-button-text="确认" cancel-button-text="取消"
                 @confirm="handleDelete(item.id)">
                 <template #reference>
-                  <el-button type="primary" size="small" text>
+                  <!-- !==!import -->
+                  <el-button class="!m-0" type="primary" size="small" text>
                     删除
                   </el-button>
                 </template>
@@ -52,7 +56,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import UploadFile from '@/components/UploadFile.vue'
 import {
   getImageList, updateImage,
@@ -83,7 +87,10 @@ function getData(limit = currentPage.value, id = image_class_id.value) {
   getImageList(id, limit)
     .then((res) => {
       total.value = res.totalCount;
-      list.value = res.list;
+      list.value = res.list.map(o => {
+        o.checkd = false;
+        return o
+      })
     })
     .finally(() => {
       loading.value = false; // 无论失败还是成功 都关闭动画
@@ -125,6 +132,23 @@ const handleDelete = (id) => {
 // 上传成功
 const handleUploadSuccess = () => getData()
 
+
+const emit = defineEmits(['choose'])
+
+// 选中图片
+const checkedImage = computed(() => {
+  return list.value.filter(o => o.checkd)
+})
+
+// 是否选中图片
+const handleChoseChange = (item) => {
+  if (item.checkd && checkedImage.value.length > 1) {
+    item.checkd = false;
+    return toast('最多只能选择一张', 'error')
+  }
+  // emit 已经选中的图片
+  emit('choose', checkedImage.value)
+}
 defineExpose({
   loadData,
   openUploadFile
