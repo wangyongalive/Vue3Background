@@ -89,7 +89,8 @@
           <el-form-item label="头像" prop="avatar">
             <!-- <el-input v-model="form.avatar" placeholder="头像"></el-input> -->
             <!-- 头像组件 -->
-            <choose-image></choose-image>
+            <!-- 组件中国的v-model -->
+            <choose-image v-model="form.avatar"></choose-image>
           </el-form-item>
           <el-form-item label="所属管理员" prop="role_id">
             <el-select v-model="form.role_id" placeholder="请选择所属管理员">

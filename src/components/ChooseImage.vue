@@ -1,4 +1,8 @@
 <template>
+  <div v-if="modelValue">
+    <el-image :src="modelValue" fit="cover" class="w-[150px] h-[150px] rounded border mr-2"></el-image>
+  </div>
+
   <div class="choose-image-btn" @click.stop="open">
     <el-icon :size="25">
       <Plus />
@@ -14,7 +18,7 @@
       <el-container>
         <!-- 兄弟组件 借助父组件进行通信 -->
         <image-aside ref="ImageAsideRef" @change="handleAsideChange"></image-aside>
-        <image-main ref="ImageMainRef" @choose="handleChoose"></image-main>
+        <image-main ref="ImageMainRef" openChoose @choose="handleChoose"></image-main>
       </el-container>
     </el-container>
     <template #footer>
@@ -35,13 +39,12 @@ import ImageMain from '@/components/ImageMain.vue'
 
 const dialogVisble = ref(false)
 
-const open = () => {
-  dialogVisble.value = true;
-}
+const open = () => dialogVisble.value = true;
 
-const submit = () => {
 
-}
+const close = () => dialogVisble.value = false;
+
+
 
 const ImageAsideRef = ref(null)
 const handleOpenCreate = () => ImageAsideRef.value.handleCreate()
@@ -52,18 +55,27 @@ const handleAsideChange = (image_class_id) => ImageMainRef.value.loadData(image_
 // 点击上传
 const handleOpenUpload = () => ImageMainRef.value.openUploadFile()
 
+const props = defineProps({
+  modelValue: [String, Array]
+})
+const emits = defineEmits(["update:modelValue"])
 
 let urls = []
 // 选中图片中的check
 const handleChoose = (e) => {
   urls = e.map(o => o.url)
-  console.log(urls)
 }
 
+const submit = () => {
+  if (urls.length) {
+    emits("update:modelValue", urls[0])
+  }
+  close()
+}
 </script>
 
 <style lang="scss" scoped>
 .choose-image-btn {
-  @apply w-[150px] h-[150px] rounded border flex justify-center items-center cursor-pointer hover: (bg-gray-100);
+  @apply flex justify-center items-center w-[150px] h-[150px] rounded border cursor-pointer hover: (bg-gray-100);
 }
 </style>

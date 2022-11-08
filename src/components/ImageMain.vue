@@ -20,7 +20,8 @@
             <!-- 文字相对定位 -->
             <div class="image-title">{{ item.name }}</div>
             <div class="flex justify-center items-center p-2">
-              <el-checkbox v-model="item.checkd" @change="handleChoseChange(item)"></el-checkbox>
+              <el-checkbox v-if="openChoose" v-model="item.checkd" @change="handleChoseChange(item)">
+              </el-checkbox>
               <el-button type="primary" size="small" text @click.stop="handleEdit(item)">
                 重命名
               </el-button>
@@ -135,7 +136,7 @@ const handleUploadSuccess = () => getData()
 
 const emit = defineEmits(['choose'])
 
-// 选中图片
+// 过滤出选中图片
 const checkedImage = computed(() => {
   return list.value.filter(o => o.checkd)
 })
@@ -143,12 +144,21 @@ const checkedImage = computed(() => {
 // 是否选中图片
 const handleChoseChange = (item) => {
   if (item.checkd && checkedImage.value.length > 1) {
-    item.checkd = false;
+    item.checkd = false; // 状态改回未选中 
     return toast('最多只能选择一张', 'error')
   }
   // emit 已经选中的图片
   emit('choose', checkedImage.value)
 }
+
+
+// 是否显示check 默认不显示
+const props = defineProps({
+  openChoose: {
+    type: Boolean,
+    default: false
+  }
+})
 defineExpose({
   loadData,
   openUploadFile
