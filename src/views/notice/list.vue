@@ -57,15 +57,21 @@ import { computed, reactive, ref } from "vue";
 import { getNotice, createNotice, updateNotice, deleteNotice } from "@/api/notice";
 import FormDrawer from "../../components/FormDrawer.vue";
 import { toast } from "@/composables/util";
+import { useInitTable } from "@/composables/useCommon";
 
-// 加载动画
-const loading = ref(false);
-const tableData = ref([]);
+// 抽离 列表分页和搜索
+const {
+  searchForm,
+  restSearchForm,
+  loading,
+  tableData,
+  currentPage,
+  total,
+  limit,
+  getData } = useInitTable({
+    getList: getNotice,
+  })
 
-// 分页
-const currentPage = ref(1);
-const total = ref(0);
-const limit = ref(10);
 
 // 区别新增和编辑
 const editId = ref(0)
@@ -92,20 +98,8 @@ const rules = {
   }]
 }
 
-// 获取数据
-function getData(page = currentPage.value) {
-  loading.value = true; // 开始加载动画
-  getNotice(page)
-    .then((res) => {
-      total.value = res.totalCount;
-      tableData.value = res.list;
-    })
-    .finally(() => {
-      loading.value = false; // 无论失败还是成功 都关闭动画
-    });
-}
 
-getData(currentPage.value);
+
 
 // 重置表单
 const resetForm = (row) => {

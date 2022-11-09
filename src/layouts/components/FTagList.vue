@@ -32,6 +32,7 @@ const { activeTab, tabList, changeTab, removeTab, handleClose } = useTabList();
 // fixed 使位置固定
 .f-tag-list {
     @apply fixed top-64px right-0 h-44px bg-gray-100 flex items-center px-2;
+    z-index: 1000;
 
     :deep(.el-tabs__header) {
         margin-bottom: 0;

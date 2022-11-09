@@ -1,6 +1,5 @@
 <template>
-
-  <el-card shadow="always">
+  <el-card shadow="always" class="y-table">
     <!-- 搜索  small:表单中的所有子组件都继承了该表单的 size 属性-->
     <el-form :model="searchForm" ref="searchFormRef" :rules="rules" label-width="80px" inline size="small"
       class="flex items-center justify-between">
@@ -24,54 +23,57 @@
         </el-button>
       </el-tooltip>
     </div>
-    <el-table :data="tableData" stripe style="width: 100%" v-loading="loading">
-      <el-table-column label="管理员" width="200" align="center">
-        <!-- 需要用到插槽 prop就不需要了 -->
-        <template v-slot="scope">
-          <div class="flex items-center">
-            <el-avatar :size="40" :src="scope.row.avatar">
-              <img src="https://cube.elemecdn.com/e/fd/0fc7d20532fdaf769a25683617711png.png" />
-            </el-avatar>
-            <div class="ml-3">
-              <h6>{{ scope.row.username }}</h6>
-              <!-- <small>元素將使文本的字体变小一号 -->
-              <small>ID:{{ scope.row.id }}</small>
+    <div class="container">
+      <el-table :data="tableData" stripe style="width: 100%" v-loading="loading" height="100%">
+        <el-table-column label="管理员" width="200" align="center">
+          <!-- 需要用到插槽 prop就不需要了 -->
+          <template v-slot="scope">
+            <div class="flex items-center">
+              <el-avatar :size="40" :src="scope.row.avatar">
+                <img src="https://cube.elemecdn.com/e/fd/0fc7d20532fdaf769a25683617711png.png" />
+              </el-avatar>
+              <div class="ml-3">
+                <h6>{{ scope.row.username }}</h6>
+                <!-- <small>元素將使文本的字体变小一号 -->
+                <small>ID:{{ scope.row.id }}</small>
+              </div>
             </div>
-          </div>
-        </template>
-      </el-table-column>
-      <el-table-column label="所属管理员" align="center">
-        <template #default="{ row }">
-          {{ row.role?.name || '-' }}
-        </template>
-      </el-table-column>
-      <el-table-column label="状态" width="120">
-        <!-- 解构 -->
-        <template #default="{ row }">
-          <!-- $event可以获取默认传递的值 $event不一定代表原生事件 -->
-          <el-switch v-model="row.status" :active-value="1" :inactive-value="0" :loading="row.statusLoading"
-            :disabled="row.super == 1" @change="handleStatusChange($event, row)">
-          </el-switch>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" width="180" align="center">
-        <template #default="scope">
-          <small v-if="scope.row.super == 1" class="text-sm text-gray-500">暂无操作</small>
-          <div v-else>
-            <el-button type="primary" size="default" text @click.stop="hanleEdit(scope.row)">修改</el-button>
-            <el-popconfirm title="是否删除该管理员?" confirm-button-text="确认" cancel-button-text="取消"
-              @confirm="hanleDelete(scope.row.id)">
-              <template #reference>
-                <el-button text type="primary">
-                  删除
-                  {{ scope.rows }}
-                </el-button>
-              </template>
-            </el-popconfirm>
-          </div>
-        </template>
-      </el-table-column>
-    </el-table>
+          </template>
+        </el-table-column>
+        <el-table-column label="所属管理员" align="center">
+          <template #default="{ row }">
+            {{ row.role?.name || '-' }}
+          </template>
+        </el-table-column>
+        <el-table-column label="状态" width="120">
+          <!-- 解构 -->
+          <template #default="{ row }">
+            <!-- $event可以获取默认传递的值 $event不一定代表原生事件 -->
+            <el-switch v-model="row.status" :active-value="1" :inactive-value="0" :loading="row.statusLoading"
+              :disabled="row.super == 1" @change="handleStatusChange($event, row)">
+            </el-switch>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="180" align="center">
+          <template #default="scope">
+            <small v-if="scope.row.super == 1" class="text-sm text-gray-500">暂无操作</small>
+            <div v-else>
+              <el-button type="primary" size="default" text @click.stop="hanleEdit(scope.row)">修改</el-button>
+              <el-popconfirm title="是否删除该管理员?" confirm-button-text="确认" cancel-button-text="取消"
+                @confirm="hanleDelete(scope.row.id)">
+                <template #reference>
+                  <el-button text type="primary">
+                    删除
+                    {{ scope.rows }}
+                  </el-button>
+                </template>
+              </el-popconfirm>
+            </div>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
+
 
     <div class="flex justify-center mt-5">
       <!-- current-page 当前页数  @current-page current-page改变时触发 -->
@@ -116,25 +118,34 @@ import FormDrawer from "../../components/FormDrawer.vue";
 import ChooseImage from "@/components/ChooseImage.vue";
 import { getManagerList, updateManagerStatus, createManager, updateManager, deleteManager } from "@/api/manager";
 import { toast } from "@/composables/util";
+import { useInitTable } from "@/composables/useCommon";
 
-// 查询表单
-const searchForm = reactive({
-  keyword: ''
-})
-// 清空表单
-const restSearchForm = () => {
-  searchForm.keyword = ''
-  getData()
-}
+// 抽离 列表分页和搜索
+const {
+  searchForm,
+  restSearchForm,
+  loading,
+  tableData,
+  currentPage,
+  total,
+  limit,
+  getData } = useInitTable({
+    searchForm: {
+      keyword: "",
+    },
+    getList: getManagerList,
+    onGetListSuccess: (res) => {
+      total.value = res.totalCount;
+      tableData.value = res.list.map((o) => {
+        o.statusLoading = false; // switch 默认没有动画
+        return o;
+      });
+      roles.value = res.roles;
+    }
+  })
 
-// 加载动画
-const loading = ref(false);
-const tableData = ref([]);
 
-// 分页
-const currentPage = ref(1);
-const total = ref(0);
-const limit = ref(10);
+
 
 // 区别新增和编辑
 const editId = ref(0)
@@ -163,26 +174,10 @@ const rules = {
   //   trigger: "blur",
   // }]
 }
+// 角色
 const roles = ref(null)
 
-// 获取数据
-function getData(page = currentPage.value) {
-  loading.value = true; // 开始加载动画
-  getManagerList(page, searchForm)
-    .then((res) => {
-      total.value = res.totalCount;
-      tableData.value = res.list.map((o) => {
-        o.statusLoading = false;  // switch 默认没有动画
-        return o;
-      });
-      roles.value = res.roles
-    })
-    .finally(() => {
-      loading.value = false; // 无论失败还是成功 都关闭动画
-    });
-}
 
-getData(currentPage.value);
 
 // 重置表单
 const resetForm = (row) => {
@@ -275,3 +270,17 @@ const handleStatusChange = (status, row) => {
 }
 
 </script>
+
+<style lang="scss" scoped>
+.y-table {
+  height: calc(100vh - 150px);
+
+  :deep(.el-card__body) {
+    height: 100%;
+  }
+
+  :deep(.container) {
+    height: calc(100% - 140px);
+  }
+}
+</style>
