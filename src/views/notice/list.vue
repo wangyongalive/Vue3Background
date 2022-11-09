@@ -52,10 +52,8 @@
 </template>
 
 <script setup>
-import { computed, reactive, ref } from "vue";
 import { getNotice, createNotice, updateNotice, deleteNotice } from "@/api/notice";
 import FormDrawer from "../../components/FormDrawer.vue";
-import { toast } from "@/composables/util";
 import { useInitTable, useInitForm } from "@/composables/useCommon";
 
 // 抽离 列表分页和搜索
@@ -67,9 +65,12 @@ const {
   currentPage,
   total,
   limit,
-  getData } = useInitTable({
-    getList: getNotice,
-  })
+  getData,
+  hanleDelete,
+} = useInitTable({
+  getList: getNotice,
+  delete: deleteNotice
+})
 
 // 抽离新增和修改(编辑)
 
@@ -107,23 +108,5 @@ const {
       create: createNotice
     }
   )
-
-
-
-
-// 删除
-const hanleDelete = (id) => {
-  loading.value = true;
-  deleteNotice(id).then(res => {
-    toast("删除成功")
-    getData(1)
-  })
-    .finally(() => {
-      loading.value = false;
-    })
-};
-
-
-
 
 </script>

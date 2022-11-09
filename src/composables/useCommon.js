@@ -1,7 +1,7 @@
 import { computed, reactive, ref } from "vue";
 import { toast } from "@/composables/util";
 
-// 列表，分页，搜索
+// 列表，分页，搜索  删除和更新状态(由于和getData有关 直接写在这里)
 export function useInitTable(opt = {}) {
   // // 查询表单
   // const searchForm = reactive({
@@ -66,6 +66,37 @@ export function useInitTable(opt = {}) {
 
   getData(currentPage.value);
 
+  // 删除
+  const hanleDelete = (id) => {
+    loading.value = true;
+    opt
+      .delete(id)
+      .then((res) => {
+        toast("删除成功");
+        getData(1);
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+  };
+
+  // 修改状态
+  const handleStatusChange = (status, row) => {
+    row.statusLoading = true; // swtich加载动画
+    opt
+      .updateStatus(row.id, status)
+      .then((res) => {
+        toast("修改状态成功!");
+        row.status = status; // 修改状态
+      })
+      .catch(() => {
+        row.status = row.status == 0 ? 1 : 0;
+      })
+      .finally(() => {
+        row.statusLoading = false;
+      });
+  };
+
   return {
     searchForm,
     restSearchForm,
@@ -75,6 +106,8 @@ export function useInitTable(opt = {}) {
     total,
     limit,
     getData,
+    hanleDelete,
+    handleStatusChange,
   };
 }
 

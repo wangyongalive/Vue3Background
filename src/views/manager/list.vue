@@ -129,20 +129,25 @@ const {
   currentPage,
   total,
   limit,
-  getData } = useInitTable({
-    searchForm: {
-      keyword: "",
-    },
-    getList: getManagerList,
-    onGetListSuccess: (res) => {
-      total.value = res.totalCount;
-      tableData.value = res.list.map((o) => {
-        o.statusLoading = false; // switch 默认没有动画
-        return o;
-      });
-      roles.value = res.roles;
-    }
-  })
+  getData,
+  hanleDelete,
+  handleStatusChange
+} = useInitTable({
+  searchForm: {
+    keyword: "",
+  },
+  getList: getManagerList,
+  onGetListSuccess: (res) => {
+    total.value = res.totalCount;
+    tableData.value = res.list.map((o) => {
+      o.statusLoading = false; // switch 默认没有动画
+      return o;
+    });
+    roles.value = res.roles;
+  },
+  updateStatus: updateManagerStatus,
+  delete: deleteManager
+})
 
 
 const {
@@ -174,36 +179,7 @@ const {
 const roles = ref(null)
 
 
-// 删除
-const hanleDelete = (id) => {
-  loading.value = true;
-  deleteManager(id).then(res => {
-    toast("删除成功")
-    getData(1)
-  })
-    .finally(() => {
-      loading.value = false;
-    })
-};
 
-
-
-
-// 修改状态
-const handleStatusChange = (status, row) => {
-  row.statusLoading = true; // swtich加载动画
-  updateManagerStatus(row.id, status)
-    .then((res) => {
-      toast('修改状态成功!')
-      row.status = status // 修改状态
-    }).
-    catch(() => {
-      row.status = row.status == 0 ? 1 : 0;
-    })
-    .finally(() => {
-      row.statusLoading = false;
-    })
-}
 
 </script>
 
