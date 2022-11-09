@@ -1,4 +1,7 @@
-import { reactive, ref } from "vue";
+import { computed, reactive, ref } from "vue";
+import { toast } from "@/composables/util";
+
+// 列表，分页，搜索
 export function useInitTable(opt = {}) {
   // // 查询表单
   // const searchForm = reactive({
@@ -72,5 +75,97 @@ export function useInitTable(opt = {}) {
     total,
     limit,
     getData,
+  };
+}
+
+// 新增 修改
+export function useInitForm(opt = {}) {
+  // 区别新增和编辑
+  const editId = ref(0);
+  const drawTitle = computed(() => (editId.value ? "修改" : "新增"));
+
+  // 表单
+  const formDrawerRef = ref(null);
+  const formRef = ref(null);
+  const defaultForm = opt.form;
+  const form = reactive({});
+
+  // 封装1
+  // 校验规则
+  const rules = opt.rules || {};
+
+  // 重置表单
+  const resetForm = (row) => {
+    if (formRef.value) {
+      // 清理某个字段的表单验证信息
+      formRef.value.clearValidate();
+    }
+    // 给表单重新赋值
+    if (row) {
+      for (const key in defaultForm) {
+        form[key] = row[key];
+      }
+    }
+  };
+
+  // 新增
+  const handleCreate = () => {
+    editId.value = 0;
+    resetForm(defaultForm);
+    formDrawerRef.value.open();
+  };
+
+  // 编辑
+  const hanleEdit = (row) => {
+    editId.value = row.id;
+    resetForm(row);
+    formDrawerRef.value.open();
+  };
+
+  // 提交表单
+  const handleSubmit = () => {
+    formRef.value.validate((valid) => {
+      if (!valid) return;
+      formDrawerRef.value.showLoading();
+
+      // 封装2
+      // 请求接口
+      const fun = editId.value
+        ? opt.update(editId.value, form)
+        : opt.create(form);
+
+      fun
+        .then((res) => {
+          toast(drawTitle.value + "成功");
+          // 修改刷新当前页 新增刷新第一页
+          opt.getData(editId.value ? undefined : 1);
+          formDrawerRef.value.close();
+        })
+        .catch((err) => {
+          console.log(err);
+        })
+        .finally(() => {
+          formDrawerRef.value.hideLoading();
+        });
+    });
+  };
+
+  // 刷新按钮
+  const handleReresh = () => {
+    opt.getData();
+  };
+
+  return {
+    editId,
+    drawTitle,
+    formDrawerRef,
+    formRef,
+    form,
+    rules,
+    resetForm,
+    handleCreate,
+    hanleEdit,
+    handleSubmit,
+    handleReresh,
   };
 }

@@ -45,7 +45,6 @@
             <el-input v-model="form.content" placeholder="公告内容" type="textarea" :rows="5"></el-input>
           </el-form-item>
         </el-form>
-
       </form-drawer>
     </div>
   </el-card>
@@ -57,7 +56,7 @@ import { computed, reactive, ref } from "vue";
 import { getNotice, createNotice, updateNotice, deleteNotice } from "@/api/notice";
 import FormDrawer from "../../components/FormDrawer.vue";
 import { toast } from "@/composables/util";
-import { useInitTable } from "@/composables/useCommon";
+import { useInitTable, useInitForm } from "@/composables/useCommon";
 
 // 抽离 列表分页和搜索
 const {
@@ -72,57 +71,45 @@ const {
     getList: getNotice,
   })
 
+// 抽离新增和修改(编辑)
 
-// 区别新增和编辑
-const editId = ref(0)
-const drawTitle = computed(() => editId.value ? '修改' : '新增')
-
-// 表单
-const formDrawerRef = ref(null)
-const formRef = ref(null)
-const form = reactive({
-  title: "标题",
-  content: '内容'
-})
-
-const rules = {
-  title: [{
-    required: true,
-    message: "公告名称不能为空",
-    trigger: "blur",
-  }],
-  content: [{
-    required: true,
-    message: "公告内容不能为空",
-    trigger: "blur",
-  }]
-}
-
-
-
-
-// 重置表单
-const resetForm = (row) => {
-  if (formRef.value) {
-    // 清理某个字段的表单验证信息
-    formRef.value.clearValidate()
-  }
-  if (row) {
-    for (const key in form) {
-      form[key] = row[key]
+const {
+  editId,
+  drawTitle,
+  formDrawerRef,
+  formRef,
+  form,
+  rules,
+  resetForm,
+  handleCreate,
+  hanleEdit,
+  handleSubmit,
+  handleReresh } = useInitForm(
+    {
+      form: {
+        title: "标题",
+        content: '内容'
+      },
+      rules: {
+        title: [{
+          required: true,
+          message: "公告名称不能为空",
+          trigger: "blur",
+        }],
+        content: [{
+          required: true,
+          message: "公告内容不能为空",
+          trigger: "blur",
+        }]
+      },
+      getData,
+      update: updateNotice,
+      create: createNotice
     }
-  }
-}
+  )
 
-// 新增
-const handleCreate = () => {
-  editId.value = 0
-  resetForm({
-    title: "",
-    content: ''
-  })
-  formDrawerRef.value.open()
-}
+
+
 
 // 删除
 const hanleDelete = (id) => {
@@ -136,36 +123,7 @@ const hanleDelete = (id) => {
     })
 };
 
-// 编辑
-const hanleEdit = (row) => {
-  editId.value = row.id;
-  resetForm(row)
-  formDrawerRef.value.open()
-}
 
-// 刷新按钮
-const handleReresh = () => {
-  getData()
-}
 
-// 提交表单
-const handleSubmit = () => {
-  formRef.value.validate((valid) => {
-    if (!valid) return;
-    formDrawerRef.value.showLoading()
-
-    const fn = editId.value ? updateNotice(editId.value, form) : createNotice(form);
-
-    fn.then(res => {
-      toast(drawTitle.value + "成功")
-      // 修改刷新当前页 新增刷新第一页
-      getData(editId.value ? currentPage.value : 1)
-      formDrawerRef.value.close()
-    })
-      .finally(() => {
-        formDrawerRef.value.hideLoading()
-      })
-  })
-}
 
 </script>

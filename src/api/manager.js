@@ -49,8 +49,8 @@ export function createManager(data) {
 }
 
 // 更新管理员
-export function updateManager(id) {
-  return request.post(`/admin/manager/${id}`);
+export function updateManager(id, data) {
+  return request.post(`/admin/manager/${id}`, data);
 }
 
 // 删除管理员
