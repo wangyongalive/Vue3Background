@@ -1,17 +1,9 @@
 <template>
 
   <el-card shadow="always">
-    <!-- 新增 | 刷新  -->
-    <div class="flex justify-center justify-between mb-4">
-      <el-button type="primary" size="small" @click.stop="handleCreate">新增</el-button>
-      <el-tooltip content="刷新数据" placement="top" effect="dark">
-        <el-button text size="default" @click.stop="handleReresh">
-          <el-icon :size="20">
-            <refresh></refresh>
-          </el-icon>
-        </el-button>
-      </el-tooltip>
-    </div>
+    <!-- 新增和刷新 -->
+    <header-list @create="handleCreate" @reFresh="handleReresh"></header-list>
+
     <el-table :data="tableData" stripe style="width: 100%" v-loading="loading">
       <el-table-column prop="title" label="公告标题" />
       <el-table-column prop="create_time" label="发布时间" />
@@ -54,6 +46,7 @@
 <script setup>
 import { getNotice, createNotice, updateNotice, deleteNotice } from "@/api/notice";
 import FormDrawer from "../../components/FormDrawer.vue";
+import HeaderList from "@/components/HeaderList.vue";
 import { useInitTable, useInitForm } from "@/composables/useCommon";
 
 // 抽离 列表分页和搜索

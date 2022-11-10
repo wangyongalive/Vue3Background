@@ -12,17 +12,10 @@
       </el-form-item>
     </el-form>
 
-    <!-- 新增 | 刷新  -->
-    <div class="flex justify-center justify-between mb-4">
-      <el-button type="primary" size="small" @click.stop="handleCreate">新增</el-button>
-      <el-tooltip content="刷新数据" placement="top" effect="dark">
-        <el-button text size="default" @click.stop="handleReresh">
-          <el-icon :size="20">
-            <refresh></refresh>
-          </el-icon>
-        </el-button>
-      </el-tooltip>
-    </div>
+    <!-- 新增和刷新 -->
+    <header-list @create="handleCreate" @reFresh="handleReresh"></header-list>
+
+
     <div class="container">
       <el-table :data="tableData" stripe style="width: 100%" v-loading="loading" height="100%">
         <el-table-column label="管理员" width="200" align="center">
@@ -116,6 +109,7 @@
 import { computed, reactive, ref } from "vue";
 import FormDrawer from "../../components/FormDrawer.vue";
 import ChooseImage from "@/components/ChooseImage.vue";
+import HeaderList from "@/components/HeaderList.vue";
 import { getManagerList, updateManagerStatus, createManager, updateManager, deleteManager } from "@/api/manager";
 import { toast } from "@/composables/util";
 import { useInitTable, useInitForm } from "@/composables/useCommon";

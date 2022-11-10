@@ -126,6 +126,14 @@ const asyncRoutes = [
       title: "优惠券列表",
     },
   },
+  {
+    path: "/access/list",
+    name: "/access/list",
+    component: () => import("../views/access/list.vue"),
+    meta: {
+      title: "菜单权限管理",
+    },
+  },
 ];
 
 const router = createRouter({
