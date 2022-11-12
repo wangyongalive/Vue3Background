@@ -1,5 +1,6 @@
 <template>
     <div class="f-tag-list" :style="{ left: $store.state.asideWidth }">
+        <!-- style="min-width:100px" 必须加宽度 否则无法显示前后符号 -->
         <el-tabs v-model="activeTab" type="card" style="min-width:100px" @tab-remove="removeTab"
             @tab-change="changeTab">
             <el-tab-pane v-for="item in tabList" :key="item.path" :closable="item.path != '/'" :label="item.title"

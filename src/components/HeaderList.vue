@@ -1,3 +1,4 @@
+// 抽离的新增和刷新功能的组件
 <template>
   <!-- 新增 | 刷新  -->
   <div class="flex justify-center justify-between mb-4">
@@ -13,7 +14,7 @@
 </template>
 
 <script setup>
-
+// 向外暴露 create reFresh
 defineEmits([
   "create", "reFresh"
 ])

@@ -8,6 +8,7 @@
         <!-- 固定定位 -->
         <f-menu></f-menu>
       </el-aside>
+      <!-- 设置固定的高度 才会出现滚动条 -->
       <el-main>
         <f-tag-list />
         <router-view v-slot="{ Component }">
