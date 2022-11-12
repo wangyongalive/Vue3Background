@@ -34,13 +34,18 @@
 </template>
 <script setup>
 import { computed, ref } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, onBeforeRouteUpdate } from "vue-router";
 import { useStore } from "vuex";
 const route = useRoute();
 const store = useStore();
 
 // 默认选中路由 
 const defaultActive = ref(route.path)
+
+// 监听路由变化
+onBeforeRouteUpdate((to) => {
+    defaultActive.value = to.path
+})
 
 // 是否折叠状态 boolean
 const isCollapse = computed(() => !(store.state.asideWidth == "250px"));

@@ -10,10 +10,10 @@
           <el-tag :type="data.menu == 1 ? '' : 'info'">
             {{ data.menu == 1 ? '菜单' : '权限' }}
           </el-tag>
-          <el-icon v-if="data.icon" :size="16" class="mx-2">
+          <el-icon v-if="data.icon" :size="16" class="ml-2">
             <component :is="data.icon"></component>
           </el-icon>
-          <span> {{ data.name }}</span>
+          <span class="ml-2"> {{ data.name }}</span>
           <!-- </div> -->
           <div class="ml-auto">
             <el-switch :model-value="data.status" :active-value="1" :inactive-value="0">
