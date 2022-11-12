@@ -14,3 +14,13 @@ export function createRule(data) {
 export function updateRule(id, data) {
   return request.post(`/admin/rule/${id}`, data);
 }
+
+// 修改菜单权限
+export function deleteRule(id) {
+  return request.post(`/admin/rule/${id}/delete`);
+}
+
+// 修改菜单权限
+export function updateRuleStatus(id, status) {
+  return request.post(`/admin/rule/${id}/update_status`, { status });
+}

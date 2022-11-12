@@ -16,12 +16,20 @@
           <span class="ml-2"> {{ data.name }}</span>
           <!-- </div> -->
           <div class="ml-auto">
-            <el-switch :model-value="data.status" :active-value="1" :inactive-value="0">
+            <el-switch :model-value="data.status" :active-value="1" :inactive-value="0"
+              @change="handleStatusChange($event, data)">
             </el-switch>
             <!-- 防止事件冒泡 -->
             <el-button type="primary" text @click.stop="hanleEdit(data)">修改</el-button>
-            <el-button type="primary" text>增加</el-button>
-            <el-button type="primary" text>删除</el-button>
+            <el-button type="primary" text @click.stop="addChild(data.id)" v-if="data.menu == 1">增加</el-button>
+            <el-popconfirm title="是否删除该记录?" confirm-button-text="确认" cancel-button-text="取消"
+              @confirm="hanleDelete(data.id)">
+              <template #reference>
+                <el-button text type="primary">
+                  删除
+                </el-button>
+              </template>
+            </el-popconfirm>
           </div>
 
         </div>
@@ -74,14 +82,16 @@ import { ref } from 'vue'
 import HeaderList from "@/components/HeaderList.vue";
 import FormDrawer from "../../components/FormDrawer.vue";
 import IconSelect from "../../components/IconSelect.vue";
-import { getRuleList, createRule, updateRule } from '@/api/rule';
+import { getRuleList, createRule, updateRule, deleteRule, updateRuleStatus } from '@/api/rule';
 import { useInitTable, useInitForm } from '@/composables/useCommon.js';
 const options = ref([])
 const defaultExpandedKeys = ref([])
 const {
   tableData,
   getData,
-  loading
+  loading,
+  handleStatusChange,
+  hanleDelete
 } = useInitTable(
   {
     getList: getRuleList,
@@ -89,8 +99,13 @@ const {
       options.value = res.rules;
       tableData.value = res.list
       defaultExpandedKeys.value = res.list.map(o => o.id)
-      console.log(defaultExpandedKeys.value)
-    }
+      tableData.value = res.list.map((o) => {
+        o.statusLoading = false; // switch 默认没有动画
+        return o;
+      });
+    },
+    updateStatus: updateRuleStatus,
+    delete: deleteRule
   }
 )
 
@@ -136,6 +151,11 @@ const {
     }
   )
 
+const addChild = (id) => {
+  handleCreate() // 先重置
+  form.rule_id = id
+  form.status = 1
+}
 
 </script>
 

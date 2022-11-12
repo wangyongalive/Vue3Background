@@ -57,7 +57,6 @@
                 <template #reference>
                   <el-button text type="primary">
                     删除
-                    {{ scope.rows }}
                   </el-button>
                 </template>
               </el-popconfirm>
