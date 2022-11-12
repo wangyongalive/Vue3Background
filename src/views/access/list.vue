@@ -47,7 +47,7 @@
           <el-input v-model="form.name" placeholder="名称"></el-input>
         </el-form-item>
         <el-form-item label="菜单图标" prop="icon" v-if="form.menu == 1">
-          <el-input v-model="form.icon"></el-input>
+          <icon-select v-model="form.icon" />
         </el-form-item>
         <el-form-item label="前端路由" prop="frontpath" v-if="form.menu == 1 && form.rule_id > 0">
           <el-input v-model="form.frontpath" placeholder="前端路由"></el-input>
@@ -73,6 +73,7 @@
 import { ref } from 'vue'
 import HeaderList from "@/components/HeaderList.vue";
 import FormDrawer from "../../components/FormDrawer.vue";
+import IconSelect from "../../components/IconSelect.vue";
 import { getRuleList, createRule, updateRule } from '@/api/rule';
 import { useInitTable, useInitForm } from '@/composables/useCommon.js';
 const options = ref([])
