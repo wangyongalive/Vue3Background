@@ -145,6 +145,7 @@ export function useInitForm(opt = {}) {
   const handleCreate = () => {
     editId.value = 0;
     resetForm(defaultForm);
+    console.log(formDrawerRef);
     formDrawerRef.value.open();
   };
 
