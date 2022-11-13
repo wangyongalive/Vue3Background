@@ -50,7 +50,9 @@
           </el-switch>
         </el-form-item>
         <el-form-item label="规格值" prop="default">
-          <el-input v-model="form.default" placeholder="规格值"></el-input>
+          <!-- <el-input v-model="form.default" placeholder="规格值"></el-input> -->
+          {{ form.default }}
+          <tag-input v-model="form.default"></tag-input>
         </el-form-item>
       </el-form>
     </form-drawer>
@@ -71,6 +73,7 @@ import {
   getRuleList
 } from "~/api/rule"
 import FormDrawer from "../../components/FormDrawer.vue";
+import TagInput from "../../components/TagInput.vue";
 import HeaderList from "@/components/HeaderList.vue";
 import { useInitTable, useInitForm } from "@/composables/useCommon";
 import { toast } from "@/composables/util";
