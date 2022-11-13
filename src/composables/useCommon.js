@@ -90,7 +90,7 @@ export function useInitTable(opt = {}) {
         row.status = status; // 修改状态
       })
       .catch(() => {
-        row.status = row.status == 0 ? 1 : 0;
+        row.status = row.status == 0 ? 0 : 1;
       })
       .finally(() => {
         row.statusLoading = false;

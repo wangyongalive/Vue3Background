@@ -42,8 +42,9 @@ const store = useStore();
 // 默认选中路由 
 const defaultActive = ref(route.path)
 
-// 监听路由变化
+// 组件内路由：  监听路由变化
 onBeforeRouteUpdate((to) => {
+    // console.log('onBeforeRouteUpdate')
     defaultActive.value = to.path
 })
 

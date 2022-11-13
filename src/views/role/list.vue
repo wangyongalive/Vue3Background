@@ -14,9 +14,10 @@
           </el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="180" align="center">
+      <el-table-column label="操作" width="250" align="center">
         <template #default="scope">
-          <el-button type="primary" size="default" text @click.stop="hanleEdit(scope.row)">修改</el-button>
+          <el-button type="primary" size="small" text @click="openSetRule(scope.row)">配置权限</el-button>
+          <el-button type="primary" size="small" text @click.stop="hanleEdit(scope.row)">修改</el-button>
           <el-popconfirm title="是否删除该分类?" confirm-button-text="确认" cancel-button-text="取消"
             @confirm="hanleDelete(scope.row.id)">
             <template #reference>
@@ -34,27 +35,44 @@
       <!-- current-page 当前页数  @current-page 改变时触发 -->
       <el-pagination background layout="prev, pager,next" :total="total" :page-size="limit" @current-change="getData"
         v-model:current-page="currentPage" />
-
-      <form-drawer ref="formDrawerRef" :title="drawTitle" @submit="handleSubmit">
-        <el-form :model="form" ref="formRef" :rules="rules" label-width="80px" :inline="false">
-          <el-form-item label="角色名称" prop="name">
-            <el-input v-model="form.name" placeholder="角色名称"></el-input>
-          </el-form-item>
-          <el-form-item label="角色描述" prop="desc">
-            <el-input v-model="form.desc" placeholder="角色描述" type="textarea" :rows="5"></el-input>
-          </el-form-item>
-          <el-form-item label="状态" prop="status">
-            <el-switch v-model="form.status" :active-value="1" :inactive-value="0">
-            </el-switch>
-          </el-form-item>
-        </el-form>
-      </form-drawer>
     </div>
+
+    <!-- 新增和修改 -->
+    <form-drawer ref="formDrawerRef" :title="drawTitle" @submit="handleSubmit">
+      <el-form :model="form" ref="formRef" :rules="rules" label-width="80px" :inline="false">
+        <el-form-item label="角色名称" prop="name">
+          <el-input v-model="form.name" placeholder="角色名称"></el-input>
+        </el-form-item>
+        <el-form-item label="角色描述" prop="desc">
+          <el-input v-model="form.desc" placeholder="角色描述" type="textarea" :rows="5"></el-input>
+        </el-form-item>
+        <el-form-item label="状态" prop="status">
+          <el-switch v-model="form.status" :active-value="1" :inactive-value="0">
+          </el-switch>
+        </el-form-item>
+      </el-form>
+    </form-drawer>
+
+
+    <!-- 权限配置 -->
+    <FormDrawer ref="setRuleFormDrawerRef" title="权限配置" @submit="handleSetRuleSubmit">
+      <el-tree-v2 :default-expanded-keys="defaultExpandedKeys" :default-checked-keys="defaultCheckedKeys"
+        :data="ruleList" :props="{ label: 'name', children: 'child' }" show-checkbox :height="treeHeight">
+        <template #default="{ data }">
+          <div class="flex items-center">
+            <el-tag :type="data.menu == 1 ? '' : 'info'">
+              {{ data.menu == 1 ? '菜单' : '限权' }}</el-tag>
+            <span class="ml-2 text-sm">{{ data.name }}</span>
+          </div>
+        </template>
+      </el-tree-v2>
+    </FormDrawer>
   </el-card>
 
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import {
   getRoleList,
   createRole,
@@ -62,6 +80,9 @@ import {
   deleteRole,
   updateRoleStatus
 } from "@/api/role";
+import {
+  getRuleList
+} from "~/api/rule"
 import FormDrawer from "../../components/FormDrawer.vue";
 import HeaderList from "@/components/HeaderList.vue";
 import { useInitTable, useInitForm } from "@/composables/useCommon";
@@ -122,5 +143,32 @@ const {
       create: createRole
     }
   )
+
+
+const setRuleFormDrawerRef = ref(null)
+const ruleList = ref([])
+const treeHeight = ref(0)
+const roleId = ref(0)
+
+// 默认展开的节点
+const defaultExpandedKeys = ref([])
+// 默认选中的节点
+const defaultCheckedKeys = ref([])
+
+
+const openSetRule = (row) => {
+  roleId.value = row.id
+  treeHeight.value = window.innerHeight - 170; // 动态计算高度
+  getRuleList(1).then(res => {
+    ruleList.value = res.list
+    defaultExpandedKeys.value = res.list.map(o => o.id)
+    defaultCheckedKeys.value = row.rules.map(o => o.id)
+    setRuleFormDrawerRef.value.open()
+  })
+}
+
+const handleSetRuleSubmit = () => {
+
+}
 
 </script>
