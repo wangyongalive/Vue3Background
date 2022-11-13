@@ -73,7 +73,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { nextTick, ref } from 'vue'
 import {
   getRoleList,
   createRole,
@@ -173,14 +173,23 @@ const openSetRule = (row) => {
     defaultExpandedKeys.value = res.list.map(o => o.id)
     // defaultCheckedKeys使用第二次打开后会有问题
     // defaultCheckedKeys.value = row.rules.map(o => o.id)
-    setTimeout(() => {
+
+    // 先打开抽屉
+    setRuleFormDrawerRef.value.open()
+
+    nextTick(() => {
+      // console.log(setRuleFormDrawerRef.value)
       // 树渲染好后才设置才有效
       setRuleTreeRef.value.setCheckedKeys(row.rules.map(o => o.id))
-    }, 150)
+    })
+    // setTimeout(() => {
+    //   // 树渲染好后才设置才有效
+    //   setRuleTreeRef.value.setCheckedKeys(row.rules.map(o => o.id))
+    // }, 150)
 
-    setRuleFormDrawerRef.value.open()
   })
 }
+
 
 const handleSetRuleSubmit = () => {
   setRuleFormDrawerRef.value.showLoading()
