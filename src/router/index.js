@@ -134,6 +134,14 @@ const asyncRoutes = [
       title: "菜单权限管理",
     },
   },
+  {
+    path: "/role/list",
+    name: "/role/list",
+    component: () => import("../views/role/list.vue"),
+    meta: {
+      title: "角色管理",
+    },
+  },
 ];
 
 const router = createRouter({

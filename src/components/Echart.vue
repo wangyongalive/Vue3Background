@@ -5,6 +5,7 @@
         <span class="text-sm">订单统计</span>
         <div>
           <!-- click.stop阻止事件传播 -->
+          <!-- el-check-tag的根元素也绑定了click事件 在组件上又透传了click事件 所以span上面有两个click事件 -->
           <el-check-tag v-for="(item, index) in options" :key="index" :checked="current == item.value"
             style="margin-right: 8px" @click.stop="handleChoose(item.value)">{{ item.text }}</el-check-tag>
         </div>

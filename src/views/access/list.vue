@@ -97,7 +97,7 @@ const {
     getList: getRuleList,
     onGetListSuccess: (res) => {
       options.value = res.rules;
-      tableData.value = res.list
+      // tableData.value = res.list
       defaultExpandedKeys.value = res.list.map(o => o.id)
       tableData.value = res.list.map((o) => {
         o.statusLoading = false; // switch 默认没有动画

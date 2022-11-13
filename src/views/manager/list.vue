@@ -19,7 +19,7 @@
     <div class="container">
       <el-table :data="tableData" stripe style="width: 100%" v-loading="loading" height="100%">
         <el-table-column label="管理员" width="200" align="center">
-          <!-- 需要用到插槽 prop就不需要了 -->
+          <!-- 需要用到插槽 table中的prop就不需要了 -->
           <template v-slot="scope">
             <div class="flex items-center">
               <el-avatar :size="40" :src="scope.row.avatar">
