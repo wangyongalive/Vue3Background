@@ -56,8 +56,9 @@
 
     <!-- 权限配置 -->
     <FormDrawer ref="setRuleFormDrawerRef" title="权限配置" @submit="handleSetRuleSubmit">
-      <el-tree-v2 :default-expanded-keys="defaultExpandedKeys" :default-checked-keys="defaultCheckedKeys"
-        :data="ruleList" :props="{ label: 'name', children: 'child' }" show-checkbox :height="treeHeight">
+      <el-tree-v2 ref="setRuleTreeRef" :check-strictly="checkStrictly" :default-expanded-keys="defaultExpandedKeys"
+        :data="ruleList" :props="{ label: 'name', children: 'child' }" show-checkbox :height="treeHeight"
+        @check="handleCheck">
         <template #default="{ data }">
           <div class="flex items-center">
             <el-tag :type="data.menu == 1 ? '' : 'info'">
@@ -78,7 +79,8 @@ import {
   createRole,
   updateRole,
   deleteRole,
-  updateRoleStatus
+  updateRoleStatus,
+  setRoleRules
 } from "@/api/role";
 import {
   getRuleList
@@ -86,7 +88,7 @@ import {
 import FormDrawer from "../../components/FormDrawer.vue";
 import HeaderList from "@/components/HeaderList.vue";
 import { useInitTable, useInitForm } from "@/composables/useCommon";
-
+import { toast } from "@/composables/util";
 // 抽离 列表分页和搜索
 const {
   searchForm,
@@ -146,29 +148,58 @@ const {
 
 
 const setRuleFormDrawerRef = ref(null)
+const setRuleTreeRef = ref(null)
 const ruleList = ref([])
 const treeHeight = ref(0)
-const roleId = ref(0)
+
+// false 关联(默认)    true 不关联 
+const checkStrictly = ref(false)
+let roleId = 0;
+let keyIds = []
 
 // 默认展开的节点
 const defaultExpandedKeys = ref([])
-// 默认选中的节点
-const defaultCheckedKeys = ref([])
+// // 默认选中的节点
+// const defaultCheckedKeys = ref([])
 
 
 const openSetRule = (row) => {
-  roleId.value = row.id
+  roleId = row.id
   treeHeight.value = window.innerHeight - 170; // 动态计算高度
+  checkStrictly.value = false; // 
   getRuleList(1).then(res => {
+    checkStrictly.value = true; // 
     ruleList.value = res.list
     defaultExpandedKeys.value = res.list.map(o => o.id)
-    defaultCheckedKeys.value = row.rules.map(o => o.id)
+    // defaultCheckedKeys使用第二次打开后会有问题
+    // defaultCheckedKeys.value = row.rules.map(o => o.id)
+    setTimeout(() => {
+      // 树渲染好后才设置才有效
+      setRuleTreeRef.value.setCheckedKeys(row.rules.map(o => o.id))
+    }, 150)
+
     setRuleFormDrawerRef.value.open()
   })
 }
 
 const handleSetRuleSubmit = () => {
-
+  setRuleFormDrawerRef.value.showLoading()
+  setRoleRules(roleId, keyIds).then(() => {
+    toast("配置成功")
+    getData()
+    setRuleFormDrawerRef.value.close()
+  })
+    .catch((err) => {
+      console.log(err)
+    })
+    .finally(() => {
+      setRuleFormDrawerRef.value.hideLoading()
+    })
 }
 
+// 
+const handleCheck = (_, info) => {
+  keyIds =
+    [...info?.checkedKeys, ...info?.halfCheckedKeys]
+}
 </script>
