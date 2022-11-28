@@ -1,10 +1,12 @@
 <template>
-
   <el-card shadow="always">
-    <!-- 新增和刷新 -->
-    <header-list @create="handleCreate" @reFresh="handleReresh"></header-list>
+    <!-- 新增 |刷新 | 删除 -->
+    <header-list layout="create,delete,reFresh" @create="handleCreate" @reFresh="handleReresh"
+      @delete="handleMultiDelete"></header-list>
 
-    <el-table :data="tableData" stripe style="width: 100%" v-loading="loading">
+    <el-table ref="multipleTableRef" @selection-change="handleSelectionChange" :data="tableData" stripe
+      style="width: 100%" v-loading="loading">
+      <el-table-column type="selection" width="55" />
       <el-table-column prop="name" label="规格名称" />
       <el-table-column prop="default" label="规格值" width="380" />
       <el-table-column prop="order" label="排序" />
@@ -18,7 +20,6 @@
       <el-table-column label="操作" width="250" align="center">
         <template #default="scope">
           <el-button type="primary" size="small" text @click="hanleEdit(scope.row)">修改</el-button>
-
           <el-popconfirm title="是否要删除该规格？" confirmButtonText="确认" cancelButtonText="取消"
             @confirm="hanleDelete(scope.row.id)">
             <template #reference>
@@ -41,7 +42,7 @@
         <el-form-item label="规格名称" prop="name">
           <el-input v-model="form.name" placeholder="规格名称"></el-input>
         </el-form-item>
-        <el-form-item label="配许" prop="order">
+        <el-form-item label="排序" prop="order">
           <el-input-number v-model="form.order" :min="0" :max="1000">
           </el-input-number>
         </el-form-item>
@@ -51,7 +52,7 @@
         </el-form-item>
         <el-form-item label="规格值" prop="default">
           <!-- <el-input v-model="form.default" placeholder="规格值"></el-input> -->
-          {{ form.default }}
+          <!-- {{ form.default }} -->
           <tag-input v-model="form.default"></tag-input>
         </el-form-item>
       </el-form>
@@ -62,6 +63,7 @@
 </template>
 
 <script setup>
+import { ref } from 'vue';
 import {
   getSkusList,
   createSkus,
@@ -69,9 +71,6 @@ import {
   deleteSkus,
   updateSkusStatus,
 } from "~/api/skus"
-import {
-  getRuleList
-} from "~/api/rule"
 import FormDrawer from "../../components/FormDrawer.vue";
 import TagInput from "../../components/TagInput.vue";
 import HeaderList from "@/components/HeaderList.vue";
@@ -88,7 +87,10 @@ const {
   limit,
   getData,
   hanleDelete,
-  handleStatusChange
+  handleStatusChange,
+  handleSelectionChange,
+  multipleTableRef,
+  handleMultiDelete
 } = useInitTable({
   getList: getSkusList,
   delete: deleteSkus,
@@ -139,5 +141,6 @@ const {
       create: createSkus
     }
   )
+
 
 </script>

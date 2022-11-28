@@ -80,6 +80,31 @@ export function useInitTable(opt = {}) {
       });
   };
 
+  // 多选
+  let multiSelections = [];
+  const handleSelectionChange = (e) => {
+    multiSelections = e.map((o) => o.id);
+  };
+
+  const multipleTableRef = ref(null);
+
+  // 批量删除
+  const handleMultiDelete = () => {
+    loading.value = true;
+    opt
+      .delete(multiSelections)
+      .then((res) => {
+        toast("删除成功");
+        if (multipleTableRef.value) {
+          multipleTableRef.value.clearSelection();
+        }
+        getData(1);
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+  };
+
   // 修改状态
   const handleStatusChange = (status, row) => {
     row.statusLoading = true; // swtich加载动画
@@ -108,6 +133,9 @@ export function useInitTable(opt = {}) {
     getData,
     hanleDelete,
     handleStatusChange,
+    handleSelectionChange,
+    multipleTableRef,
+    handleMultiDelete,
   };
 }
 

@@ -25,7 +25,7 @@ const InputRef = ref("")
 // 监听props属性变化
 watch(() => props.modelValue,
   (newVal, oldVal) => {
-    dynamicTags.value = newVal.split(",")
+    dynamicTags.value = newVal ? newVal.split(",") : []
   })
 
 
