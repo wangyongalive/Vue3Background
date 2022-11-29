@@ -190,11 +190,19 @@ export function useInitForm(opt = {}) {
       if (!valid) return;
       formDrawerRef.value.showLoading();
 
+      // 转换传递的参数
+      let body = {};
+      if (opt.beforeSumbit) {
+        body = opt.beforeSumbit({ ...form });
+      } else {
+        body = form;
+      }
+
       // 封装2
       // 请求接口
       const fun = editId.value
-        ? opt.update(editId.value, form)
-        : opt.create(form);
+        ? opt.update(editId.value, body)
+        : opt.create(body);
 
       fun
         .then((res) => {
