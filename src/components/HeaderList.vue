@@ -1,6 +1,6 @@
 // 抽离的新增和刷新功能的组件
 <template>
-  <!-- 新增 | 刷新  -->
+  <!-- 新增 | 刷新  |批量删除 -->
   <div class="flex justify-center justify-between mb-4">
     <div>
       <el-button v-if="btns.includes('create')" type="primary" size="small" @click.stop="$emit('create')">新增</el-button>
