@@ -41,6 +41,8 @@ export function useInitTable(opt = {}) {
 
   // 获取数据
   function getData(page = currentPage.value) {
+    
+    console.log("currentPage.value", currentPage.value, page);
     loading.value = true; // 开始加载动画
     // 封装2：
     // 请求的接口通过外部传入
@@ -59,6 +61,7 @@ export function useInitTable(opt = {}) {
           tableData.value = res.list;
         }
       })
+      .catch((e) => console.log(e))
       .finally(() => {
         loading.value = false; // 无论失败还是成功 都关闭动画
       });

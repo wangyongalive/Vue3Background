@@ -27,7 +27,7 @@
             @click="hanleEdit(scope.row)">修改
           </el-button>
           <el-popconfirm v-if="scope.row.statusText !== '领取中'" title="是否要删除该优惠券？" confirmButtonText="确认"
-            cancelButtonText="取消" @confirm="handleDelete(scope.row.id)">
+            cancelButtonText="取消" @confirm="hanleDelete(scope.row.id)">
             <template #reference>
               <el-button text type="primary" size="small">删除</el-button>
             </template>
@@ -122,7 +122,7 @@ const {
   total,
   limit,
   getData,
-  handleDelete,
+  hanleDelete,
   handleStatusChange
 } = useInitTable({
   getList: getCouponList,

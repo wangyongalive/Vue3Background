@@ -1,4 +1,5 @@
 import request from "@/axios.js";
+import { queryParams } from "~/composables/util";
 
 export function login(username, password) {
   return request.post("/admin/login", {
@@ -26,14 +27,8 @@ export function getManagerList(
     keyword: "ceshi",
   }
 ) {
-  let q = [];
-  for (const key in query) {
-    if (query[key] != null) {
-      q.push(`${key}=${query[key]}`);
-    }
-  }
-  q = q.join("&");
-  return request.get(`/admin/manager/${page}?${q}`);
+  let r = queryParams(query);
+  return request.get(`/admin/manager/${page}${r}`);
 }
 
 // 修改管理员状态
