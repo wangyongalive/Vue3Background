@@ -4,7 +4,7 @@
   <div class="flex justify-center justify-between mb-4">
     <div>
       <el-button v-if="btns.includes('create')" type="primary" size="small" @click.stop="$emit('create')">新增</el-button>
-      <span @click.stop="() => { }" style="margin-left:10px;">
+      <span @click.stop="() => { }" style="margin-left:10px;margin-right: 10px;">
         <el-popconfirm v-if="btns.includes(`delete`)" title="是否要删除该规格？" confirmButtonText="确认" cancelButtonText="取消"
           @confirm="$emit('delete')">
           <template #reference>
@@ -13,6 +13,7 @@
           </template>
         </el-popconfirm>
       </span>
+      <slot></slot>
     </div>
     <el-tooltip v-if="btns.includes(`reFresh`)" content="刷新数据" placement="top" effect="dark">
       <el-button text size="default" @click.stop="$emit('reFresh')">

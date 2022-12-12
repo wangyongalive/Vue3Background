@@ -108,6 +108,24 @@ export function useInitTable(opt = {}) {
       });
   };
 
+  // 批量修改状态
+  const handleMultiStatusChange = () => {
+    loading.value = true;
+    opt
+      .updateStatus(multiSelections)
+      .then((res) => {
+        toast("修改状态成功");
+        // 清空选中
+        if (multipleTableRef.value) {
+          multipleTableRef.value.clearSelection();
+        }
+        getData(1);
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+  };
+
   // 修改状态
   const handleStatusChange = (status, row) => {
     row.statusLoading = true; // swtich加载动画
@@ -139,6 +157,7 @@ export function useInitTable(opt = {}) {
     handleSelectionChange,
     multipleTableRef,
     handleMultiDelete,
+    handleMultiStatusChange,
   };
 }
 

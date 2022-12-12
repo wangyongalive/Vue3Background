@@ -23,10 +23,17 @@
       </search>
 
       <!-- 新增和刷新 -->
-      <header-list @create="handleCreate" @reFresh="handleReresh" />
+      <header-list layout="create,delete,reFresh" @create="handleCreate" @reFresh="handleReresh"
+        @delete="handleMultiDelete" >
+      <el-button size="small" @click="handleMultiStatusChange(1)" v-if="searchForm.tab=='all' || searchForm.tab=='off'">上架</el-button>
+      <el-button size="small" @click="handleMultiStatusChange(0)"  v-if="searchForm.tab=='all' || searchForm.tab=='saling'">下架</el-button>
+      
+      </header-list>
 
       <div class="container">
-        <el-table :data="tableData" stripe style="width: 100%" v-loading="loading" height="100%">
+        <el-table ref="multipleTableRef" @selection-change="handleSelectionChange" :data="tableData" stripe
+          style="width: 100%" v-loading="loading" height="100%">
+          <el-table-column type="selection" width="55" />
           <el-table-column label="管理员" width="300" align="center">
             <!-- 需要用到插槽 table中的prop就不需要了 -->
             <template v-slot="{ row }">
@@ -187,7 +194,10 @@ const {
   limit,
   getData,
   hanleDelete,
-  handleStatusChange
+  handleSelectionChange,
+  multipleTableRef,
+  handleMultiDelete,
+  handleMultiStatusChange
 } = useInitTable({
   searchForm: {
     title: "",
