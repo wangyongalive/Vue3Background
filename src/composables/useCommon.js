@@ -41,8 +41,8 @@ export function useInitTable(opt = {}) {
 
   // 获取数据
   function getData(page = currentPage.value) {
-    
     console.log("currentPage.value", currentPage.value, page);
+    currentPage.value = page;
     loading.value = true; // 开始加载动画
     // 封装2：
     // 请求的接口通过外部传入
