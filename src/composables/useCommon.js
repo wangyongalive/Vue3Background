@@ -196,6 +196,7 @@ export function useInitForm(opt = {}) {
       // 转换传递的参数
       let body = {};
       if (opt.beforeSumbit) {
+        // 拷贝一份form表单
         body = opt.beforeSumbit({ ...form });
       } else {
         body = form;

@@ -73,7 +73,7 @@
           <el-input-number v-model="form.order" :min="1" :max="1000" />
         </el-form-item>
         <el-form-item label="活动时间" prop="type">
-          <el-date-picker v-model="timerange" :editable="false" value-forma="YYYY-MM-DD HH:mm:ss" type="datetimerange"
+          <el-date-picker v-model="timerange" :editable="false" value-format="YYYY-MM-DD HH:mm:ss" type="datetimerange"
             range-separator="To" start-placeholder="开始时间" end-placeholder="结束时间" />
         </el-form-item>
         <el-form-item label="描述" prop="desc">
