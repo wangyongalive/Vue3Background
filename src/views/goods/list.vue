@@ -5,39 +5,23 @@
       <el-tab-pane :label="item.name" :name="item.key" v-for="(item, index) in tabbars" ::key="index"></el-tab-pane>
     </el-tabs>
     <el-card shadow="never" class="y-table border-0">
-      <!-- 搜索  small:表单中的所有子组件都继承了该表单的 size 属性-->
-      <el-form :model="searchForm" ref="searchFormRef" :rules="rules" label-width="80px" inline size="small">
-        <el-row :gutter="20">
-          <el-col :span="8" :offset="0">
-            <el-form-item label="关键词">
-              <el-input v-model="searchForm.title" placeholder="商品名称" clearable></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8" :offset="0" v-if="showSearch">
-            <el-form-item label="关键词" prop="category_id">
-              <el-select v-model="searchForm.category_id" placeholder="请选择商品分类" clearable>
-                <el-option v-for="item in category_list" :key="item.id" :label="item.name" :value="item.id">
-                </el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <!-- 动态设置offset-->
-          <el-col :span="8" :offset="showSearch ? 0 : 8">
-            <div class="flex items-center justify-end">
-              <el-button type="primary" @click="getData(1)">搜索</el-button>
-              <el-button @click="restSearchForm">重置</el-button>
-              <el-button type="primary" size="default" @click="showSearch = !showSearch" text>
-                {{ showSearch ? '收起' : '展开' }}
-              <el-icon>
-                <ArrowUp v-if="showSearch" />
-                  <ArrowDown v-else />
-              </el-icon>
-              </el-button>
-            </div>
-          </el-col>
-        </el-row>
 
-      </el-form>
+      <search @search="getData(1)" @reset="restSearchForm">
+        <!-- 默认插槽 -->
+        <search-item label="关键词">
+          <el-input v-model="searchForm.title" placeholder="商品名称" clearable></el-input>
+        </search-item>
+        <!-- 高级搜索插槽 -->
+        <template #show>
+          <search-item label="商品名称">
+            <el-select v-model="searchForm.category_id" placeholder="请选择商品分类" clearable>
+              <el-option v-for="item in category_list" :key="item.id" :label="item.name" :value="item.id">
+              </el-option>
+            </el-select>
+          </search-item>
+        </template>
+      </search>
+
 
       <!-- 新增和刷新 -->
       <header-list @create="handleCreate" @reFresh="handleReresh" />
@@ -132,8 +116,8 @@
           </el-form-item>
           <el-form-item label="所属管理员" prop="role_id">
             <el-select v-model="form.role_id" placeholder="请选择所属管理员">
-              <el-option v-for="item in roles" :key="item.id" :label="item.name" :value="item.id">
-              </el-option>
+              <!-- <el-option v-for="item in roles" :key="item.id" :label="item.name" :value="item.id">
+              </el-option> -->
             </el-select>
           </el-form-item>
           <el-form-item label="状态" prop="status">
@@ -153,6 +137,9 @@ import { ref } from "vue";
 import FormDrawer from "../../components/FormDrawer.vue";
 import ChooseImage from "@/components/ChooseImage.vue";
 import HeaderList from "@/components/HeaderList.vue";
+import Search from "@/components/Search.vue";
+import SearchItem from "@/components/SearchItem.vue";
+
 import {
   getGoodsList,
   updateGoodsStatus,
@@ -190,7 +177,7 @@ const {
       o.statusLoading = false; // switch 默认没有动画
       return o;
     });
-    roles.value = res.roles;
+    // roles.value = res.roles;
   },
   updateStatus: updateGoodsStatus,
   delete: deleteGoods
@@ -249,7 +236,6 @@ const tabbars = [{
 const category_list = ref([])
 getCategoryList().then(res => category_list.value = res)
 
-const showSearch = ref(false);
 </script>
 
 <style lang="scss" scoped>

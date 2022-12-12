@@ -1,16 +1,12 @@
 <template>
   <el-card shadow="always" class="y-table">
-    <!-- 搜索  small:表单中的所有子组件都继承了该表单的 size 属性-->
-    <el-form :model="searchForm" ref="searchFormRef" :rules="rules" label-width="80px" inline size="small"
-      class="flex items-center justify-between">
-      <el-form-item label="关键词">
+
+    <search @search="getData(1)" @reset="restSearchForm">
+      <!-- 默认插槽 -->
+      <search-item label="关键词">
         <el-input v-model="searchForm.keyword" placeholder="管理员昵称" clearable></el-input>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click.stop="getData(1)">搜索</el-button>
-        <el-button @click.stop="restSearchForm">重置</el-button>
-      </el-form-item>
-    </el-form>
+      </search-item>
+    </search>
 
     <!-- 新增和刷新 -->
     <header-list @create="handleCreate" @reFresh="handleReresh"></header-list>
@@ -112,6 +108,8 @@ import HeaderList from "@/components/HeaderList.vue";
 import { getManagerList, updateManagerStatus, createManager, updateManager, deleteManager } from "@/api/manager";
 import { toast } from "@/composables/util";
 import { useInitTable, useInitForm } from "@/composables/useCommon";
+import Search from "@/components/Search.vue";
+import SearchItem from "@/components/SearchItem.vue";
 
 // 抽离 列表分页和搜索
 const {
