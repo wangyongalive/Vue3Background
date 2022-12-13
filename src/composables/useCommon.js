@@ -109,10 +109,10 @@ export function useInitTable(opt = {}) {
   };
 
   // 批量修改状态
-  const handleMultiStatusChange = () => {
+  const handleMultiStatusChange = (status) => {
     loading.value = true;
     opt
-      .updateStatus(multiSelections)
+      .updateStatus(multiSelections, status)
       .then((res) => {
         toast("修改状态成功");
         // 清空选中
