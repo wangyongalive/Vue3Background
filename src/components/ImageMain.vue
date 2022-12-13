@@ -65,6 +65,22 @@ import {
 } from "@/api/image.js";
 import { showPrompt, toast } from '@/composables/util.js'
 
+
+const emit = defineEmits(['choose'])
+
+// 是否显示check 默认不显示
+const props = defineProps({
+  openChoose: {
+    type: Boolean,
+    default: false
+  },
+  limit: {
+    type: Number,
+    default: 1
+  }
+})
+
+
 // 上传图片抽屉
 const drawer = ref(false)
 // 打开抽屉 导出供外部使用
@@ -134,7 +150,7 @@ const handleDelete = (id) => {
 const handleUploadSuccess = () => getData()
 
 
-const emit = defineEmits(['choose'])
+
 
 // 过滤出选中图片
 const checkedImage = computed(() => {
@@ -143,22 +159,15 @@ const checkedImage = computed(() => {
 
 // 是否选中图片
 const handleChoseChange = (item) => {
-  if (item.checkd && checkedImage.value.length > 1) {
+  if (item.checkd && checkedImage.value.length > props.limit) {
     item.checkd = false; // 状态改回未选中 
-    return toast('最多只能选择一张', 'error')
+    return toast(`最多只能选中${props.limit}张`, "error")
   }
   // emit 已经选中的图片
   emit('choose', checkedImage.value)
 }
 
 
-// 是否显示check 默认不显示
-const props = defineProps({
-  openChoose: {
-    type: Boolean,
-    default: false
-  }
-})
 defineExpose({
   loadData,
   openUploadFile

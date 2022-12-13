@@ -24,10 +24,12 @@
 
       <!-- 新增和刷新 -->
       <header-list layout="create,delete,reFresh" @create="handleCreate" @reFresh="handleReresh"
-        @delete="handleMultiDelete" >
-      <el-button size="small" @click="handleMultiStatusChange(1)" v-if="searchForm.tab=='all' || searchForm.tab=='off'">上架</el-button>
-      <el-button size="small" @click="handleMultiStatusChange(0)"  v-if="searchForm.tab=='all' || searchForm.tab=='saling'">下架</el-button>
-      
+        @delete="handleMultiDelete">
+        <el-button size="small" @click="handleMultiStatusChange(1)"
+          v-if="searchForm.tab == 'all' || searchForm.tab == 'off'">上架</el-button>
+        <el-button size="small" @click="handleMultiStatusChange(0)"
+          v-if="searchForm.tab == 'all' || searchForm.tab == 'saling'">下架</el-button>
+
       </header-list>
 
       <div class="container">
@@ -79,10 +81,14 @@
           <el-table-column label="操作" align="center">
             <template #default="scope">
               <div v-if="searchForm.tab !== 'delete'">
-                <el-button class="px-0" type="primary" size="default" text @click="hanleEdit(scope.row)">修改</el-button>
+                <el-button class="px-0" type="primary" size="default" text
+                  @click.stop="hanleEdit(scope.row)">修改</el-button>
                 <el-button class="px-0" type="primary" size="default" text>商品规格</el-button>
-                <el-button class="px-0" type="primary" size="default" text>设置轮播图</el-button>
-                <el-button class="px-0" type="primary" size="default" text>商品详情</el-button>
+                <el-button class="px-0" size="default" text @click.stop="handleSetGoodsBanners(scope.row)"
+                  :type="scope.row.goods_banner.length == 0 ? 'danger' : 'primary'"
+                  :loading="scope.row.bannersLoading">设置轮播图</el-button>
+                <el-button class="px-0" :type="!scope.row.content ? 'danger' : 'primary'" size="default" text
+                  @click.stop="handleSetGoodsContent(scope.row)" :loading="scope.row.contentLoading">商品详情</el-button>
                 <el-popconfirm title="是否删除该商品?" confirm-button-text="确认" cancel-button-text="取消"
                   @confirm="hanleDelete(scope.row.id)">
                   <template #reference>
@@ -159,6 +165,11 @@
           </el-form-item>
         </el-form>
       </form-drawer>
+
+      <!-- getData() 不使用reloadData传递的参数 -->
+      <banners ref="bannersRef" @reloadData="getData()"></banners>
+
+      <content ref="contentRef" @reloadData="getData()"></content>
     </el-card>
   </div>
 </template>
@@ -170,6 +181,8 @@ import ChooseImage from "@/components/ChooseImage.vue";
 import HeaderList from "@/components/HeaderList.vue";
 import Search from "@/components/Search.vue";
 import SearchItem from "@/components/SearchItem.vue";
+import banners from "./banners.vue";
+import content from "./content.vue";
 
 import {
   getGoodsList,
@@ -208,10 +221,10 @@ const {
   onGetListSuccess: (res) => {
     total.value = res.totalCount;
     tableData.value = res.list.map((o) => {
-      o.statusLoading = false; // switch 默认没有动画
+      o.bannersLoading = false; // 轮播图 默认没有动画
+      o.contentLoading = false; // 商品详情 默认没有动画
       return o;
     });
-    // roles.value = res.roles;
   },
   updateStatus: updateGoodsStatus,
   delete: deleteGoods
@@ -275,6 +288,14 @@ const tabbars = [{
 // 商品分类
 const category_list = ref([])
 getCategoryList().then(res => category_list.value = res)
+
+// 设置轮播图
+const bannersRef = ref(null)
+const handleSetGoodsBanners = (row) => bannersRef.value.open(row)
+
+// 设置商品
+const contentRef = ref(null)
+const handleSetGoodsContent = (row) => contentRef.value.open(row)
 
 </script>
 

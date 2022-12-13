@@ -1,6 +1,16 @@
 <template>
   <div v-if="modelValue">
-    <el-image :src="modelValue" fit="cover" class="w-[150px] h-[150px] rounded border mr-2"></el-image>
+    <el-image v-if="typeof modelValue === 'string'" :src="modelValue" fit="cover"
+      class="w-[100px] h-[100px] rounded border mr-2"></el-image>
+    <div v-else class="flex flex-wrap h-[100px]">
+      <div class="relative w-[100px] h-[100px] mx-1 mb-2" v-for="(url, index) in modelValue" :key="url + index">
+        <el-icon class="absolute right-[5px] top-[5px] z-10 cursor-pointer bg-white rounded-full"
+          @click.stop="removeImage(url)">
+          <CircleClose />
+        </el-icon>
+        <el-image :src="url" fit="cover" class="w-[100px] h-[100px] rounded border mr-2"></el-image>
+      </div>
+    </div>
   </div>
 
   <div class="choose-image-btn" @click.stop="open">
@@ -8,6 +18,7 @@
       <Plus />
     </el-icon>
   </div>
+
   <el-dialog title="选择图片" v-model="dialogVisble" width="80%" top="5vh">
     <!-- 布局容器 -->
     <el-container class="bg-white rounded" style="height:70vh">
@@ -18,7 +29,7 @@
       <el-container>
         <!-- 兄弟组件 借助父组件进行通信 -->
         <image-aside ref="ImageAsideRef" @change="handleAsideChange"></image-aside>
-        <image-main ref="ImageMainRef" openChoose @choose="handleChoose"></image-main>
+        <image-main :limit="limit" ref="ImageMainRef" openChoose @choose="handleChoose"></image-main>
       </el-container>
     </el-container>
     <template #footer>
@@ -36,14 +47,24 @@ import { ref } from 'vue'
 // .vue 要加后缀
 import ImageAside from '@/components/ImageAside.vue'
 import ImageMain from '@/components/ImageMain.vue'
+import { toast } from "~/composables/util";
+
+
+const props = defineProps({
+  modelValue: [String, Array],
+  limit: {
+    type: Number,
+    default: 1
+  }
+})
+const emits = defineEmits(["update:modelValue"])
+
+
 
 const dialogVisble = ref(false)
 
 const open = () => dialogVisble.value = true;
-
-
 const close = () => dialogVisble.value = false;
-
 
 
 const ImageAsideRef = ref(null)
@@ -55,10 +76,7 @@ const handleAsideChange = (image_class_id) => ImageMainRef.value.loadData(image_
 // 点击上传
 const handleOpenUpload = () => ImageMainRef.value.openUploadFile()
 
-const props = defineProps({
-  modelValue: [String, Array]
-})
-const emits = defineEmits(["update:modelValue"])
+
 
 let urls = []
 // 选中图片中的check
@@ -66,16 +84,33 @@ const handleChoose = (e) => {
   urls = e.map(o => o.url)
 }
 
+// 提交前校验
 const submit = () => {
-  if (urls.length) {
-    emits("update:modelValue", urls[0])
+  let value = []
+  if (props.limit == 1) {
+    value = urls[0]
+  } else {
+    value = [...props.modelValue, ...urls]
+    if (value.length > props.limit) {
+      return toast("最多还能选择" + (props.limit - props.modelValue.length) + "张")
+    }
+  }
+  if (value) {
+    emits("update:modelValue", value)
   }
   close()
 }
+
+
+// 删除图片
+const removeImage = (url) =>
+  emits("update:modelValue", props.modelValue.filter(u => u != url))
+
+
 </script>
 
 <style lang="scss" scoped>
 .choose-image-btn {
-  @apply flex justify-center items-center w-[150px] h-[150px] rounded border cursor-pointer hover: (bg-gray-100);
+  @apply flex justify-center items-center w-[100px] h-[100px] rounded border cursor-pointer hover: (bg-gray-100);
 }
 </style>

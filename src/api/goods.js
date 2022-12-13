@@ -27,3 +27,12 @@ export function deleteGoods(ids) {
     ids,
   });
 }
+
+export function readGoods(id) {
+  return axios.get(`/admin/goods/read/${id}`);
+}
+
+// 设置商品轮播图
+export function setGoodsBanner(id, data) {
+  return axios.post(`/admin/goods/banners/${id}`, data);
+}
