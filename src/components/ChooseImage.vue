@@ -1,5 +1,5 @@
 <template>
-  <div v-if="modelValue">
+  <div v-if="modelValue && preview">
     <el-image v-if="typeof modelValue === 'string'" :src="modelValue" fit="cover"
       class="w-[100px] h-[100px] rounded border mr-2"></el-image>
     <div v-else class="flex flex-wrap h-[100px]">
@@ -13,7 +13,7 @@
     </div>
   </div>
 
-  <div class="choose-image-btn" @click.stop="open">
+  <div v-if="preview" class="choose-image-btn" @click.stop="open">
     <el-icon :size="25">
       <Plus />
     </el-icon>
@@ -55,6 +55,10 @@ const props = defineProps({
   limit: {
     type: Number,
     default: 1
+  },
+  preview: { // 预览 是否显示 +  添加的图片
+    type: Boolean,
+    default: true
   }
 })
 const emits = defineEmits(["update:modelValue"])
@@ -62,8 +66,11 @@ const emits = defineEmits(["update:modelValue"])
 
 
 const dialogVisble = ref(false)
-
-const open = () => dialogVisble.value = true;
+const callbackFunction = ref(null); // 提交时的回调函数
+const open = (callback = null) => {
+  callbackFunction.value = callback
+  dialogVisble.value = true
+};
 const close = () => dialogVisble.value = false;
 
 
@@ -90,13 +97,18 @@ const submit = () => {
   if (props.limit == 1) {
     value = urls[0]
   } else {
-    value = [...props.modelValue, ...urls]
+    // props.modelValue 传递的图片 
+    value = props.preview ? [...props.modelValue, ...urls] : [...urls]
     if (value.length > props.limit) {
-      return toast("最多还能选择" + (props.limit - props.modelValue.length) + "张")
+      let limit = props.preview ? (props.limit - props.modelValue.length) : props.limit
+      return toast("最多还能选择" + limit + "张")
     }
   }
-  if (value) {
+  if (value && props.preview) {
     emits("update:modelValue", value)
+  }
+  if (!props.preview && typeof callbackFunction.value === 'function') {
+    callbackFunction.value(value)
   }
   close()
 }
@@ -106,6 +118,11 @@ const submit = () => {
 const removeImage = (url) =>
   emits("update:modelValue", props.modelValue.filter(u => u != url))
 
+
+
+defineExpose({
+  open
+})
 
 </script>
 
