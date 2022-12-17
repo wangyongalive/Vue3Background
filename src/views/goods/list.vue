@@ -83,7 +83,10 @@
               <div v-if="searchForm.tab !== 'delete'">
                 <el-button class="px-0" type="primary" size="default" text
                   @click.stop="hanleEdit(scope.row)">修改</el-button>
-                <el-button class="px-0" type="primary" size="default" text>商品规格</el-button>
+                <el-button class="px-0" type="primary" size="default" text
+                @click.stop="handleSetGoodsSkus(scope.row)"
+                  :loading="scope.row.skusLoading"    
+                >商品规格</el-button>
                 <el-button class="px-0" size="default" text @click.stop="handleSetGoodsBanners(scope.row)"
                   :type="scope.row.goods_banner.length == 0 ? 'danger' : 'primary'"
                   :loading="scope.row.bannersLoading">设置轮播图</el-button>
@@ -170,6 +173,10 @@
       <banners ref="bannersRef" @reloadData="getData()"></banners>
 
       <content ref="contentRef" @reloadData="getData()"></content>
+
+      <!-- 规格说明 -->
+      <skus ref="skusRef" @reloadData="getData()"></skus>
+
     </el-card>
   </div>
 </template>
@@ -183,13 +190,15 @@ import Search from "@/components/Search.vue";
 import SearchItem from "@/components/SearchItem.vue";
 import banners from "./banners.vue";
 import content from "./content.vue";
+import skus from "./skus.vue";
 
 import {
   getGoodsList,
   updateGoodsStatus,
   createGoods,
   updateGoods,
-  deleteGoods
+  deleteGoods,
+  
 } from "~/api/goods"
 import {
   getCategoryList
@@ -223,6 +232,7 @@ const {
     tableData.value = res.list.map((o) => {
       o.bannersLoading = false; // 轮播图 默认没有动画
       o.contentLoading = false; // 商品详情 默认没有动画
+      o.skusLoading = false; // 设置商品规格 默认没有动画
       return o;
     });
   },
@@ -296,6 +306,10 @@ const handleSetGoodsBanners = (row) => bannersRef.value.open(row)
 // 设置商品
 const contentRef = ref(null)
 const handleSetGoodsContent = (row) => contentRef.value.open(row)
+
+// 设置商品规格
+const skusRef = ref(null)
+const handleSetGoodsSkus = (row) => skusRef.value.open(row)
 
 </script>
 
