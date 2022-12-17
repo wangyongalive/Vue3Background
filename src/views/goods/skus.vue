@@ -42,10 +42,9 @@
             </template>
           </el-input>
         </el-form-item>
-        <tets></tets>
       </template>
       <template v-else>
-        多规格
+        <sku-card></sku-card>
       </template>
     </el-form>
   </form-drawer>
@@ -54,7 +53,7 @@
 <script setup>
 import { ref, reactive } from "vue"
 import FormDrawer from "~/components/FormDrawer.vue";
-import tets from "./tets.vue"
+import SkuCard from "./components/SkuCard.vue"
 
 import {
   readGoods,
@@ -62,6 +61,11 @@ import {
 } from "~/api/goods"
 import { toast } from "~/composables/util";
 
+// 数据抽离到composables/useSku.js中
+import {
+  goods,
+  initSkuCardList
+} from "~/composables/useSku.js"
 
 const emit = defineEmits(["reloadData"])
 
@@ -78,7 +82,7 @@ const form = reactive({
   }
 })
 
-const goods = ref(0)
+// const goods = ref(0)
 const open = (row) => {
   goods.value = row.id;
   row.skusLoading = true // 设置商品规格按钮加载状态
@@ -92,6 +96,7 @@ const open = (row) => {
         weight: 0,
         volume: 0
       }
+      initSkuCardList(res)  // composables 传递的接口
       formDrawerRef.value.open() // 打开详情
     })
     .finally(() => {
