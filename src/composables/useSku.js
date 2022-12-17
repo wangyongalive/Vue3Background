@@ -1,9 +1,12 @@
-import { ref } from "vue";
+import { ref, nextTick } from "vue";
 import {
   createGoodsSkusCard,
   updateGoodsSkusCard,
   deleteGoodsSkusCard,
   sortGoodsSkusCard,
+  createGoodsSkusCardValue,
+  updateGoodsSkusCardValue,
+  deleteGoodsSkusCardValue,
 } from "~/api/goods.js";
 import { useArrayMoveUp, useArrayMoveDown } from "~/composables/util";
 
@@ -116,7 +119,92 @@ export function sortCard(action, index) {
 // 初始化规格的值
 export function initSkusCardItem(id) {
   const item = sku_card_list.value.find((o) => o.id == id);
+
+  const inputValue = ref("");
+  const inputVisible = ref(false);
+  const InputRef = ref();
+
+  // 删除
+  const handleClose = (tag) => {
+    loading.value = true;
+    deleteGoodsSkusCardValue(tag.id)
+      .then((res) => {
+        let index = item.goodsSkusCardValue.findIndex((o) => o.id === tag.id);
+        if (index != -1) {
+          item.goodsSkusCardValue.splice(index, 1);
+        }
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+  };
+
+  const showInput = () => {
+    inputVisible.value = true;
+    nextTick(() => {
+      InputRef.value.input.focus();
+    });
+  };
+
+  const loading = ref(false);
+
+  const handleInputConfirm = () => {
+    if (!inputValue.value) {
+      inputVisible.value = false;
+      return;
+    }
+    loading.value = true;
+    createGoodsSkusCardValue({
+      goods_skus_card_id: id,
+      name: item.name,
+      order: 50,
+      value: inputValue.value,
+    })
+      .then((res) => {
+        // 初始化默认值
+        item.goodsSkusCardValue.push({
+          ...res,
+          text: res.value,
+        });
+      })
+      .finally(() => {
+        inputVisible.value = false;
+        inputValue.value = "";
+        loading.value = false;
+      });
+  };
+
+  // 选项值发生变化
+  const handleChange = (value, tag) => {
+    loading.value = true;
+    updateGoodsSkusCardValue(tag.id, {
+      goods_skus_card_id: id,
+      name: item.name,
+      order: tag.order,
+      value: value,
+    })
+      .then((res) => {
+        // 修改成功
+        tag.value = value;
+      })
+      .catch(() => {
+        // 修改失败
+        tag.text = tag.value;
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+  };
+
   return {
     item,
+    inputValue,
+    inputVisible,
+    InputRef,
+    handleClose,
+    showInput,
+    handleInputConfirm,
+    handleChange,
+    loading,
   };
 }
