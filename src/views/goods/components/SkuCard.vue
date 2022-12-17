@@ -1,9 +1,9 @@
 <template>
   <el-form-item label="规格选项" style="width:100%">
-    <el-card shadow="never" class="y-card" v-for="card in sku_card_list" :key="card.id">
+    <el-card shadow="never" class="y-card" v-for="card in sku_card_list" :key="card.id" v-loading="card.loading">
       <template #header>
         <div class="flex items-center">
-          <el-input v-model="card.text" placeholder="规格名称" style="width:200px;">
+          <el-input v-model="card.text" placeholder="规格名称" style="width:200px;" @change="handleUpdate(card)">
             <template #append>
               <el-icon>
                 <more />
@@ -32,7 +32,8 @@ import SkuCardItem from './SkuCardItem.vue';
 import {
   btnLoading,
   sku_card_list,
-  addSkuCardEvent
+  addSkuCardEvent,
+  handleUpdate
 } from "~/composables/useSku.js"
 
 </script>
