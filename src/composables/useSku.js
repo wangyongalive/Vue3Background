@@ -1,4 +1,5 @@
 import { ref } from "vue";
+import { createGoodsSkusCard } from "~/api/goods.js";
 
 // 当前商品ID
 export const goods = ref(0);
@@ -18,6 +19,29 @@ export function initSkuCardList(d) {
     });
     return item;
   });
+}
+
+// 添加规格按钮
+export const btnLoading = ref(false);
+export function addSkuCardEvent() {
+  btnLoading.value = true;
+  createGoodsSkusCard({
+    goods_id: goods.value,
+    name: "规格选项",
+    order: 50,
+    type: 0,
+  })
+    .then((res) => {
+      sku_card_list.value.push({
+        ...res,
+        text: res.name,
+        loading: false,
+        goodsSkusCardValue: [],
+      });
+    })
+    .finally(() => {
+      btnLoading.value = false;
+    });
 }
 
 // 初始化规格的值

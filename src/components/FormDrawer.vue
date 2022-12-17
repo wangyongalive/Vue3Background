@@ -65,6 +65,7 @@ defineExpose({
 .formDrawer .body {
   /* flex: 1; */
   @apply flex-1;
+  overflow-y: auto;
 }
 
 /* height占50% */
