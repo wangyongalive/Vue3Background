@@ -1,5 +1,9 @@
 import { ref } from "vue";
-import { createGoodsSkusCard, updateGoodsSkusCard } from "~/api/goods.js";
+import {
+  createGoodsSkusCard,
+  updateGoodsSkusCard,
+  deleteGoodsSkusCard,
+} from "~/api/goods.js";
 
 // 当前商品ID
 export const goods = ref(0);
@@ -65,6 +69,18 @@ export function handleUpdate(item) {
     .finally(() => {
       item.loading = false;
     });
+}
+
+// 删除规格选项
+export function handleDelete(item) {
+  // card选项加载动画
+  item.loading = true; // item都删除了 就不用重置为true
+  deleteGoodsSkusCard(item.id)
+    .then((res) => {
+      const index = sku_card_list.value.findIndex((o) => o.id == item.id);
+      sku_card_list.value.splice(index, 1);
+    })
+    .catch((err) => {});
 }
 
 // 初始化规格的值

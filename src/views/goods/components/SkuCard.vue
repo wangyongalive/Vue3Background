@@ -16,9 +16,16 @@
           <el-button size="small"><el-icon>
               <Bottom />
             </el-icon></el-button>
-          <el-button size="small"><el-icon>
-              <Delete />
-            </el-icon></el-button>
+
+          <el-popconfirm title="是否要删除该选项？" confirmButtonText="确认" cancelButtonText="取消" @confirm="handleDelete(card)">
+            <template #reference>
+              <!-- popconfirm阻止事件冒泡 -->
+              <el-button size="small" @click.stop><el-icon>
+                  <Delete />
+                </el-icon></el-button>
+            </template>
+          </el-popconfirm>
+
         </div>
       </template>
       <sku-card-item :skuCardId="card.id"></sku-card-item>
@@ -33,7 +40,8 @@ import {
   btnLoading,
   sku_card_list,
   addSkuCardEvent,
-  handleUpdate
+  handleUpdate,
+  handleDelete
 } from "~/composables/useSku.js"
 
 </script>
