@@ -17,7 +17,6 @@ const {
   item
 } = initSkusCardItem(props.skuCardId)
 
-console.log({ item })
 </script>
 
 <style scoped>

@@ -57,3 +57,18 @@ export function queryParams(query) {
   r = r ? "?" + r : "";
   return r;
 }
+
+// 上移
+export function useArrayMoveUp(arr, index) {
+  swapArray(arr, index, index - 1);
+}
+
+// 下移
+export function useArrayMoveDown(arr, index) {
+  swapArray(arr, index, index + 1);
+}
+
+// 交换元素
+const swapArray = (arr, index1, index2) => {
+  [arr[index1], arr[index2]] = [arr[index2], arr[index1]];
+};

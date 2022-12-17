@@ -3,7 +3,9 @@ import {
   createGoodsSkusCard,
   updateGoodsSkusCard,
   deleteGoodsSkusCard,
+  sortGoodsSkusCard,
 } from "~/api/goods.js";
+import { useArrayMoveUp, useArrayMoveDown } from "~/composables/util";
 
 // 当前商品ID
 export const goods = ref(0);
@@ -81,6 +83,34 @@ export function handleDelete(item) {
       sku_card_list.value.splice(index, 1);
     })
     .catch((err) => {});
+}
+
+// 排序规格选项
+// 加载动画
+export const bodyLoading = ref(false);
+export function sortCard(action, index) {
+  // 拷贝一份数据
+  let oList = JSON.parse(JSON.stringify(sku_card_list.value));
+  let func = action == "up" ? useArrayMoveUp : useArrayMoveDown;
+  func(oList, index);
+  let sortData = oList.map((o, i) => {
+    return {
+      id: o.id,
+      order: i + 1,
+    };
+  });
+  bodyLoading.value = true;
+  // 发送请求
+  sortGoodsSkusCard({
+    sortdata: sortData,
+  })
+    .then(() => {
+      func(sku_card_list.value, index);
+    })
+    .catch(() => {})
+    .finally(() => {
+      bodyLoading.value = false;
+    });
 }
 
 // 初始化规格的值

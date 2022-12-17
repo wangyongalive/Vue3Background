@@ -1,6 +1,7 @@
 <template>
-  <el-form-item label="规格选项" style="width:100%">
-    <el-card shadow="never" class="y-card" v-for="card in sku_card_list" :key="card.id" v-loading="card.loading">
+  <el-form-item label="规格选项" style="width:100%" v-loading="bodyLoading">
+    <el-card shadow="never" class="y-card" v-for="(card, index) in sku_card_list" :key="card.id"
+      v-loading="card.loading">
       <template #header>
         <div class="flex items-center">
           <el-input v-model="card.text" placeholder="规格名称" style="width:200px;" @change="handleUpdate(card)">
@@ -10,10 +11,11 @@
               </el-icon>
             </template>
           </el-input>
-          <el-button class="ml-auto" size="small"><el-icon>
+          <el-button class="ml-auto" size="small" @click.stop="sortCard('up', index)" :disabled="index == 0"><el-icon>
               <Top />
             </el-icon></el-button>
-          <el-button size="small"><el-icon>
+          <el-button size="small" @click.stop="sortCard('down', index)"
+            :disabled="index === (sku_card_list.length - 1)"><el-icon>
               <Bottom />
             </el-icon></el-button>
 
@@ -41,8 +43,12 @@ import {
   sku_card_list,
   addSkuCardEvent,
   handleUpdate,
-  handleDelete
+  handleDelete,
+  sortCard,
+  bodyLoading
 } from "~/composables/useSku.js"
+
+
 
 </script>
 
