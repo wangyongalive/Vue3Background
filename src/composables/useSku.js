@@ -7,6 +7,7 @@ import {
   createGoodsSkusCardValue,
   updateGoodsSkusCardValue,
   deleteGoodsSkusCardValue,
+  chooseAndSetGoodsSkusCard,
 } from "~/api/goods.js";
 import { useArrayMoveUp, useArrayMoveDown } from "~/composables/util";
 
@@ -82,8 +83,11 @@ export function handleDelete(item) {
   item.loading = true; // item都删除了 就不用重置为true
   deleteGoodsSkusCard(item.id)
     .then((res) => {
+      // 不通过重新发请求
       const index = sku_card_list.value.findIndex((o) => o.id == item.id);
-      sku_card_list.value.splice(index, 1);
+      if (index != -1) {
+        sku_card_list.value.splice(index, 1);
+      }
     })
     .catch((err) => {});
 }
@@ -116,6 +120,26 @@ export function sortCard(action, index) {
     });
 }
 
+// 选择设置规格
+export function handleChooseSetGoodsSkusCard(id, data) {
+  console.log("sku_card_list", sku_card_list.value);
+  let item = sku_card_list.value.find((o) => o.id == id);
+
+  item.loading = true;
+  chooseAndSetGoodsSkusCard(id, data)
+    .then((res) => {
+      console.log(res);
+      item.name = item.text = res.goods_skus_card.name;
+      item.goodsSkusCardValue = res.goods_skus_card_value.map((o) => {
+        o.text = o.value || "属性值";
+        return o;
+      });
+    })
+    .finally(() => {
+      item.loading = false;
+    });
+}
+
 // 初始化规格的值
 export function initSkusCardItem(id) {
   const item = sku_card_list.value.find((o) => o.id == id);
@@ -129,6 +153,7 @@ export function initSkusCardItem(id) {
     loading.value = true;
     deleteGoodsSkusCardValue(tag.id)
       .then((res) => {
+        // 不通过重新发请求
         let index = item.goodsSkusCardValue.findIndex((o) => o.id === tag.id);
         if (index != -1) {
           item.goodsSkusCardValue.splice(index, 1);

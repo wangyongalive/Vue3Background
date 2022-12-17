@@ -6,7 +6,7 @@
         <div class="flex items-center">
           <el-input v-model="card.text" placeholder="规格名称" style="width:200px;" @change="handleUpdate(card)">
             <template #append>
-              <el-icon>
+              <el-icon class="cursor-pointer" @click="handleChooseSku(card)">
                 <more />
               </el-icon>
             </template>
@@ -34,10 +34,13 @@
     </el-card>
     <el-button type="success" size="small" :loading="btnLoading" @click.stop="addSkuCardEvent">添加规格</el-button>
   </el-form-item>
+  <ChooseSku ref="ChooseSkuRef" @submit="handleSubmit" />
 </template>
 
 <script setup>
+import { ref } from "vue"
 import SkuCardItem from './SkuCardItem.vue';
+import ChooseSku from "~/components/ChooseSku.vue"
 import {
   btnLoading,
   sku_card_list,
@@ -45,10 +48,27 @@ import {
   handleUpdate,
   handleDelete,
   sortCard,
-  bodyLoading
+  bodyLoading,
+  handleChooseSetGoodsSkusCard
 } from "~/composables/useSku.js"
 
 
+const ChooseSkuRef = ref(null)
+let itemId = null // 保存当前item的id
+const handleChooseSku = (item) => {
+  itemId = item.id
+  ChooseSkuRef.value.open()
+}
+
+
+const handleSubmit = (form) => {
+  // 使用当前item的id
+  // 视频中是通过 ChooseSkuRef.value.open() 传递回调函数来调用handleChooseSetGoodsSkusCard 感觉不太合理
+  handleChooseSetGoodsSkusCard(itemId, {
+    name: form.name,
+    value: form.list
+  })
+}
 
 </script>
 
