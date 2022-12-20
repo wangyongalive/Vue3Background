@@ -122,13 +122,13 @@ export function sortCard(action, index) {
 
 // 选择设置规格
 export function handleChooseSetGoodsSkusCard(id, data) {
-  console.log("sku_card_list", sku_card_list.value);
+  // console.log("sku_card_list", sku_card_list.value);
   let item = sku_card_list.value.find((o) => o.id == id);
 
-  item.loading = true;
+  item.loading = true; // 加载动画
   chooseAndSetGoodsSkusCard(id, data)
     .then((res) => {
-      console.log(res);
+      // console.log(res);
       item.name = item.text = res.goods_skus_card.name;
       item.goodsSkusCardValue = res.goods_skus_card_value.map((o) => {
         o.text = o.value || "属性值";
@@ -136,7 +136,7 @@ export function handleChooseSetGoodsSkusCard(id, data) {
       });
     })
     .finally(() => {
-      item.loading = false;
+      item.loading = false; // 取消加载动画
     });
 }
 

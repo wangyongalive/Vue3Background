@@ -6,7 +6,7 @@
         <div class="flex items-center">
           <el-input v-model="card.text" placeholder="规格名称" style="width:200px;" @change="handleUpdate(card)">
             <template #append>
-              <el-icon class="cursor-pointer" @click="handleChooseSku(card)">
+              <el-icon class="cursor-pointer" @click.stop="handleChooseSku(card)">
                 <more />
               </el-icon>
             </template>
@@ -34,6 +34,8 @@
     </el-card>
     <el-button type="success" size="small" :loading="btnLoading" @click.stop="addSkuCardEvent">添加规格</el-button>
   </el-form-item>
+
+  <!-- 选择规格弹出框 -->
   <ChooseSku ref="ChooseSkuRef" @submit="handleSubmit" />
 </template>
 
@@ -53,8 +55,11 @@ import {
 } from "~/composables/useSku.js"
 
 
+// 规则选项ref
 const ChooseSkuRef = ref(null)
 let itemId = null // 保存当前item的id
+
+// 打开sku 规则选项
 const handleChooseSku = (item) => {
   itemId = item.id
   ChooseSkuRef.value.open()
