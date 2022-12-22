@@ -83,10 +83,13 @@ export function useInitTable(opt = {}) {
       });
   };
 
-  // 多选
-  let multiSelections = [];
+  // 多选 multiSelections 要用ref 否则导出不同步
+  // 由于multiSelections2 被重新赋值 地址改变了 所以不同步
+  let multiSelections = ref([]);
+  // let multiSelections2 = [];
   const handleSelectionChange = (e) => {
-    multiSelections = e.map((o) => o.id);
+    multiSelections.value = e.map((o) => o.id);
+    // multiSelections2 = e.map((o) => o.id);
   };
 
   const multipleTableRef = ref(null);
@@ -95,7 +98,7 @@ export function useInitTable(opt = {}) {
   const handleMultiDelete = () => {
     loading.value = true;
     opt
-      .delete(multiSelections)
+      .delete(multiSelections.value)
       .then((res) => {
         toast("删除成功");
         if (multipleTableRef.value) {
@@ -112,7 +115,7 @@ export function useInitTable(opt = {}) {
   const handleMultiStatusChange = (status) => {
     loading.value = true;
     opt
-      .updateStatus(multiSelections, status)
+      .updateStatus(multiSelections.value, status)
       .then((res) => {
         toast("修改状态成功");
         // 清空选中
@@ -158,6 +161,8 @@ export function useInitTable(opt = {}) {
     multipleTableRef,
     handleMultiDelete,
     handleMultiStatusChange,
+    multiSelections,
+    // multiSelections2,
   };
 }
 

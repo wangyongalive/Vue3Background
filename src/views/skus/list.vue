@@ -20,6 +20,7 @@
       <el-table-column label="操作" width="250" align="center">
         <template #default="scope">
           <el-button type="primary" size="small" text @click="hanleEdit(scope.row)">修改</el-button>
+          {{ scope.row.id }}
           <el-popconfirm title="是否要删除该规格？" confirmButtonText="确认" cancelButtonText="取消"
             @confirm="hanleDelete(scope.row.id)">
             <template #reference>

@@ -23,8 +23,10 @@
       </search>
 
       <!-- 新增和刷新 -->
-      <header-list layout="create,delete,reFresh" @create="handleCreate" @reFresh="handleReresh"
-        @delete="handleMultiDelete">
+      <header-list layout="create,reFresh" @create="handleCreate" @reFresh="handleReresh">
+        <el-button type="danger" size="small" @click.stop="handleMultiDelete" v-if="searchForm.tab != 'delete'">批量删除</el-button>
+        <el-button type="warning" size="small" @click.stop="handleRestoreGoods" v-else>恢复商品</el-button>
+
         <el-button size="small" @click="handleMultiStatusChange(1)"
           v-if="searchForm.tab == 'all' || searchForm.tab == 'off'">上架</el-button>
         <el-button size="small" @click="handleMultiStatusChange(0)"
@@ -93,7 +95,7 @@
                 <el-button class="px-0" :type="!scope.row.content ? 'danger' : 'primary'" size="default" text
                   @click.stop="handleSetGoodsContent(scope.row)" :loading="scope.row.contentLoading">商品详情</el-button>
                 <el-popconfirm title="是否删除该商品?" confirm-button-text="确认" cancel-button-text="取消"
-                  @confirm="hanleDelete(scope.row.id)">
+                  @confirm="hanleDelete([scope.row.id])">
                   <template #reference>
                     <el-button text type="primary">
                       删除
@@ -191,6 +193,7 @@ import SearchItem from "@/components/SearchItem.vue";
 import banners from "./banners.vue";
 import content from "./content.vue";
 import skus from "./skus.vue";
+import { toast } from "@/composables/util.js";
 
 import {
   getGoodsList,
@@ -198,7 +201,7 @@ import {
   createGoods,
   updateGoods,
   deleteGoods,
-  
+  restoreGoods
 } from "~/api/goods"
 import {
   getCategoryList
@@ -219,7 +222,9 @@ const {
   handleSelectionChange,
   multipleTableRef,
   handleMultiDelete,
-  handleMultiStatusChange
+  handleMultiStatusChange,
+  multiSelections,
+  // multiSelections2
 } = useInitTable({
   searchForm: {
     title: "",
@@ -310,6 +315,25 @@ const handleSetGoodsContent = (row) => contentRef.value.open(row)
 // 设置商品规格
 const skusRef = ref(null)
 const handleSetGoodsSkus = (row) => skusRef.value.open(row)
+
+// 恢复删除
+const handleRestoreGoods = ()=>{
+  // console.log(multiSelections2);
+  loading.value = true
+  restoreGoods(multiSelections.value)
+  .then(res=>{
+      toast("恢复成功")
+      // 清空选中
+      if (multipleTableRef.value) {
+          multipleTableRef.value.clearSelection()
+      }
+      getData(1)
+  })
+  .finally(()=>{
+    loading.value = false
+  })
+}
+
 
 </script>
 
