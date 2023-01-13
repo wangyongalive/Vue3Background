@@ -12,13 +12,12 @@
         <template #default="{ row }">
           <el-popconfirm title="是否要删除该记录？" confirmButtonText="确认" cancelButtonText="取消" @confirm="handleDelete(row)">
             <template #reference>
-              <el-button text type="primary" size="small" :loading="row.loading">删除</el-button>
+              <el-button text type="primary" size="small" :loading="row.loading" @click.stop>删除</el-button>
             </template>
           </el-popconfirm>
         </template>
       </el-table-column>
     </el-table>
-
   </FormDrawer>
 
   <ChooseGoods ref="ChooseGoodsRef" />
@@ -38,52 +37,60 @@ import {
   connectCategoryGoods
 } from "~/api/category.js"
 
-const category_id = ref(0);
+const category_id = ref(0); // category的id
 const formDrawerRef = ref(null)
 const tableData = ref([]);
+
 
 // 打开组件的时候 传递item数据
 const open = (item) => {
   category_id.value = item.id
-  item.goodsDrawerLoading = true
-  getData().then(res => {
-    formDrawerRef.value.open()
-  })
+  item.goodsDrawerLoading = true // 加载按钮动画
+  // 请求数据
+  getData()
+    .then(() => {
+      formDrawerRef.value.open()
+    })
     .finally(() => {
-      item.goodsDrawerLoading = false
+      item.goodsDrawerLoading = false // 取消按钮加载动画
     })
 }
 
 // 抽离获取数据的函数
 function getData() {
-  return getCategoryGoods(category_id.value).then(
-    (res) => {
-      console.log('getData')
-      tableData.value = res.map(o => {
-        o.loading = false // 添加动效
-        return o
-      })
-    }
-  );
+  // 返回promise
+  return getCategoryGoods(category_id.value)
+    .then(
+      (res) => {
+        // console.log('getData')
+        tableData.value = res.map(o => {
+          o.loading = false // 添加动效
+          return o
+        })
+      }
+    );
 }
 
+// 删除
 const handleDelete = (row) => {
-  // 添加动效
+  // 添加按钮动效
   row.loading = true
-  deleteCategoryGoods(row.id).then(res => {
-    // 已经删除了 不用将loading置false
-    toast("删除成功")
-    getData()
-  })
+  deleteCategoryGoods(row.id)
+    .then(res => {
+      // 已经删除了 不用将loading置false
+      toast("删除成功")
+      getData()
+    })
     .finally(() => {
       console.log('finally')
       console.log(row)
     })
 }
 
+// 打开关联对话框
 const ChooseGoodsRef = ref(null)
 const handleConnect = () => {
-  // 传递一个回调函数 当ChooseGoods提交时 执行传递的回调函数
+  // 传递一个回调函数 当ChooseGoods提交时submit 执行传递的回调函数
   ChooseGoodsRef.value.open((goods_ids) => {
     formDrawerRef.value.showLoading()
     connectCategoryGoods({

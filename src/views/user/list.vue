@@ -1,6 +1,5 @@
 <template>
     <el-card shadow="always" class="y-table">
-
         <search @search="getData(1)" @reset="restSearchForm">
             <!-- 默认插槽 -->
             <search-item label="关键词">
@@ -71,7 +70,7 @@
                             <el-popconfirm title="是否删除该记录?" confirm-button-text="确认" cancel-button-text="取消"
                                 @confirm="hanleDelete(scope.row.id)">
                                 <template #reference>
-                                    <el-button text type="primary">
+                                    <el-button text type="primary" @click.stop>
                                         删除
                                     </el-button>
                                 </template>
@@ -87,46 +86,44 @@
             <!-- current-page 当前页数  @current-page current-page改变时触发 -->
             <el-pagination background layout="prev, pager,next" :total="total" :page-size="limit"
                 @current-change="getData" v-model:current-page="currentPage" />
-
-            <form-drawer ref="formDrawerRef" :title="drawTitle" @submit="handleSubmit">
-                <el-form :model="form" ref="formRef" :rules="rules" label-width="80px" :inline="false">
-                    <el-form-item label="用户名" prop="username">
-                        <el-input v-model="form.username" placeholder="用户名"></el-input>
-                    </el-form-item>
-                    <el-form-item label="密码" prop="password">
-                        <el-input v-model="form.password" placeholder="密码"></el-input>
-                    </el-form-item>
-                    <el-form-item label="昵称" prop="nickname">
-                        <el-input v-model="form.nickname" placeholder="昵称"></el-input>
-                    </el-form-item>
-                    <el-form-item label="头像" prop="avatar">
-                        <!-- <el-input v-model="form.avatar" placeholder="头像"></el-input> -->
-                        <!-- 头像组件 -->
-                        <!-- 组件中的v-model -->
-                        <choose-image v-model="form.avatar"></choose-image>
-                    </el-form-item>
-                    <el-form-item label="会员等级" prop="user_level_id">
-                        <el-select v-model="form.user_level_id" placeholder="选择会员等级">
-                            <el-option v-for="item in user_level" :key="item.id" :label="item.name" :value="item.id">
-                            </el-option>
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item label="手机" prop="phone">
-                        <el-input v-model="form.phone" placeholder="手机"></el-input>
-                    </el-form-item>
-                    <el-form-item label="邮箱" prop="email">
-                        <el-input v-model="form.email" placeholder="邮箱"></el-input>
-                    </el-form-item>
-                    <el-form-item label="状态" prop="content">
-                        <el-switch v-model="form.status" :active-value="1" :inactive-value="0">
-                        </el-switch>
-                    </el-form-item>
-                </el-form>
-
-            </form-drawer>
         </div>
-    </el-card>
 
+        <form-drawer ref="formDrawerRef" :title="drawTitle" @submit="handleSubmit">
+            <el-form :model="form" ref="formRef" :rules="rules" label-width="80px" :inline="false">
+                <el-form-item label="用户名" prop="username">
+                    <el-input v-model="form.username" placeholder="用户名"></el-input>
+                </el-form-item>
+                <el-form-item label="密码" prop="password">
+                    <el-input v-model="form.password" placeholder="密码"></el-input>
+                </el-form-item>
+                <el-form-item label="昵称" prop="nickname">
+                    <el-input v-model="form.nickname" placeholder="昵称"></el-input>
+                </el-form-item>
+                <el-form-item label="头像" prop="avatar">
+                    <!-- <el-input v-model="form.avatar" placeholder="头像"></el-input> -->
+                    <!-- 头像组件 -->
+                    <!-- 组件中的v-model -->
+                    <choose-image v-model="form.avatar"></choose-image>
+                </el-form-item>
+                <el-form-item label="会员等级" prop="user_level_id">
+                    <el-select v-model="form.user_level_id" placeholder="选择会员等级">
+                        <el-option v-for="item in user_level" :key="item.id" :label="item.name" :value="item.id">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="手机" prop="phone">
+                    <el-input v-model="form.phone" placeholder="手机"></el-input>
+                </el-form-item>
+                <el-form-item label="邮箱" prop="email">
+                    <el-input v-model="form.email" placeholder="邮箱"></el-input>
+                </el-form-item>
+                <el-form-item label="状态" prop="content">
+                    <el-switch v-model="form.status" :active-value="1" :inactive-value="0">
+                    </el-switch>
+                </el-form-item>
+            </el-form>
+        </form-drawer>
+    </el-card>
 </template>
   
 <script setup>
@@ -182,13 +179,11 @@ const {
 
 
 const {
-    editId,
     drawTitle,
     formDrawerRef,
     formRef,
     form,
     rules,
-    resetForm,
     handleCreate,
     hanleEdit,
     handleSubmit,

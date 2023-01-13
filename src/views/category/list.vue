@@ -6,28 +6,27 @@
       <template #default="{ node, data }">
         <div class="custom-tree-node">
           <span>{{ data.name }}</span>
-
           <div class="ml-auto">
-            <el-button text type="primary" size="small" @click="openGoodsDrawer(data)"
+            <!-- 添加加载动画 -->
+            <el-button text type="primary" size="small" @click.stop="openGoodsDrawer(data)"
               :loading="data.goodsDrawerLoading">推荐商品</el-button>
 
             <el-switch :modelValue="data.status" :active-value="1" :inactive-value="0"
               @change="handleStatusChange($event, data)" />
-            <el-button text type="primary" size="small" @click.stop="handleEdit(data)">修改</el-button>
+            <el-button text type="primary" size="small" @click.stop="hanleEdit(data)">修改</el-button>
 
             <el-popconfirm title="是否要删除该记录？" confirmButtonText="确认" cancelButtonText="取消"
               @confirm="handleDelete(data.id)">
               <template #reference>
-                <el-button text type="primary" size="small">删除</el-button>
+                <el-button text type="primary" size="small" @click.stop>删除</el-button>
               </template>
             </el-popconfirm>
           </div>
-
         </div>
       </template>
     </el-tree>
 
-    <FormDrawer ref="formDrawerRef" :title="drawerTitle" @submit="handleSubmit">
+    <FormDrawer ref="formDrawerRef" :title="drawTitle" @submit="handleSubmit">
       <el-form :model="form" ref="formRef" :rules="rules" label-width="80px" :inline="false">
         <el-form-item label="分类名称" prop="name">
           <el-input v-model="form.name" placeholder="分类名称"></el-input>
@@ -35,6 +34,7 @@
       </el-form>
     </FormDrawer>
 
+    <!-- 单独封装一个推荐商品组件 -->
     <GoodsDrawer ref="GoodsDrawerRef" />
 
   </el-card>
@@ -61,7 +61,6 @@ const {
   loading,
   tableData,
   getData,
-
   handleDelete,
   handleStatusChange
 } = useInitTable({
@@ -83,10 +82,10 @@ const {
   formRef,
   form,
   rules,
-  drawerTitle,
+  drawTitle,
   handleSubmit,
   handleCreate,
-  handleEdit
+  hanleEdit
 } = useInitForm({
   form: {
     name: "",
@@ -96,6 +95,7 @@ const {
   update: updateCategory,
   create: createCategory
 })
+
 
 
 const GoodsDrawerRef = ref(null);
@@ -115,7 +115,7 @@ const openGoodsDrawer = (data) => GoodsDrawerRef.value.open(data);
 }
 
 .custom-tree-node {
-  flex: 1;
+  // flex: 1;
   display: flex;
   align-items: center;
   font-size: 14px;

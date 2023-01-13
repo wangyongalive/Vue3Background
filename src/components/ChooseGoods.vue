@@ -31,8 +31,8 @@
     </div>
     <template #footer>
       <span>
-        <el-button @click="close">取消</el-button>
-        <el-button type="primary" @click="submit">确定</el-button>
+        <el-button @click.stop="close">取消</el-button>
+        <el-button type="primary" @click.stop="submit">确定</el-button>
       </span>
     </template>
   </el-dialog>
@@ -42,20 +42,22 @@ import { ref } from "vue"
 import {
   getGoodsList
 } from "~/api/goods.js"
+
 import { useInitTable } from '~/composables/useCommon.js'
+
+
 const dialogvisible = ref(false)
 
 const {
   handleSelectionChange,
   multipleTableRef,
-  searchForm,
   tableData,
   loading,
   currentPage,
   total,
   limit,
   getData,
-  multiSelections
+  multiSelections // 
 } = useInitTable({
   searchForm: {
     title: "",
@@ -73,6 +75,7 @@ function close() {
   dialogvisible.value = false
 }
 
+// 保存传递的函数
 const callbackFunction = ref(null)
 const open = (callback = null) => {
   callbackFunction.value = callback
@@ -80,6 +83,7 @@ const open = (callback = null) => {
 }
 
 const submit = () => {
+  // 执行的函数
   if (typeof callbackFunction.value === "function") {
     callbackFunction.value(multiSelections.value)
   }
