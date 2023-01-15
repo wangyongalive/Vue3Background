@@ -8,7 +8,7 @@
         </search>
 
         <div class="container">
-            <el-table :data="tableData" stripe style="width: 100%" v-loading="loading" height="100%">
+            <el-table :data="tableData" stripe style="width: 100%" v-loading="loading" height="100%" row-key="id">
                 <el-table-column type="expand">
                     <template #default="{ row }">
                         <div class="flex ml-18">
@@ -17,6 +17,8 @@
                                 <h6 class="flex items-center">
                                     {{ row.user.nickname || row.user.username }}
                                     <small class=" text-gray-400 ml-2">{{ row.review_time }}</small>
+                                    <el-button size="small" class="ml-auto" @click.stop="openTextarea(row)"
+                                        v-if="!row.textareaEdit && !row.extra">回复</el-button>
                                 </h6>
                                 {{ row.review.data }}
                                 <div class="py-2">
@@ -24,14 +26,26 @@
                                         fit="fill" :lazy="true" style="width:100px;height:100px;"
                                         class="rounded"></el-image>
                                 </div>
-                                <div class="mt-3 p-3 rounded bg-gray-100" v-for="(item, index) in row.extra"
-                                    :key="index">
-                                    <h6 class="flex font-bold">
-                                        客服
-                                        <el-button type="info" size="small" class="ml-auto">修改</el-button>
-                                    </h6>
-                                    <p>{{ item.data }}</p>
+
+                                <div v-if="row.textareaEdit">
+                                    <el-input v-model="row.textarea" type="textarea"
+                                        placeholder="Please input"></el-input>
+                                    <div class="py-2">
+                                        <el-button type="primary" size="small" @click.stop="review(row)">回复</el-button>
+                                        <el-button size="small" @click="row.textareaEdit = false">取消</el-button>
+                                    </div>
                                 </div>
+                                <template v-else>
+                                    <div class="mt-3 p-3 rounded bg-gray-100" v-for="(item, index) in row.extra"
+                                        :key="index">
+                                        <h6 class="flex font-bold">
+                                            客服
+                                            <el-button type="info" size="small" class="ml-auto"
+                                                @click.stop="openTextarea(row, item.data)">修改</el-button>
+                                        </h6>
+                                        <p>{{ item.data }}</p>
+                                    </div>
+                                </template>
                             </div>
                         </div>
                     </template>
@@ -84,14 +98,15 @@
         </div>
     </el-card>
 </template>
-  
 <script setup>
 import Search from "@/components/Search.vue";
 import SearchItem from "@/components/SearchItem.vue";
 import { useInitTable } from "@/composables/useCommon";
+import { toast } from "~/composables/util"
 import {
     getGoodsCommentList,
     updateGoodsCommentStatus,
+    reviewGoodsComment
 } from "~/api/goods_comment"
 
 
@@ -117,14 +132,33 @@ const {
         total.value = res.totalCount;
         tableData.value = res.list.map((o) => {
             o.statusLoading = false; // switch 默认没有动画
+            o.textareaEdit = false
+            o.textarea = ''
             return o;
         });
     },
     updateStatus: updateGoodsCommentStatus
 })
 
+const openTextarea = (row, data = '') => {
+    console.log('row', row)
+    row.textareaEdit = true
+    row.textarea = data
+}
+
+const review = (row) => {
+    if (row.textarea == '') {
+        return toast("回复内容不能为空", "error")
+    }
+    reviewGoodsComment(row.id, row.textarea)
+        .then(() => {
+            row.textareaEdit = false;
+            toast("回复成功")
+            getData(1)
+        })
+        .catch(console.log)
+}
 </script>
-  
 <style lang="scss" scoped>
 .y-table {
     height: calc(100vh - 150px);
