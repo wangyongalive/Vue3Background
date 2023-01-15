@@ -9,8 +9,8 @@
         <!-- 动态设置offset-->
         <el-col :span="8" :offset="showSearch ? 0 : 8">
           <div class="flex items-center justify-end">
-            <el-button type="primary" @click="$emit('search')">搜索</el-button>
-            <el-button @click="$emit('reset')">重置</el-button>
+            <el-button type="primary" @click.stop="$emit('search')">搜索</el-button>
+            <el-button @click.stop="$emit('reset')">重置</el-button>
             <!-- slots没有高级组件就不显示 -->
             <el-button type="primary" size="default" @click="showSearch = !showSearch" text v-if="slots.show">
               {{ showSearch ? '收起' : '展开' }}
