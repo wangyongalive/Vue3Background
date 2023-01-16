@@ -13,14 +13,22 @@
                     <el-input v-model="searchForm.no" placeholder="订单编号" clearable></el-input>
                 </search-item>
                 <!-- 高级搜索插槽 -->
-                <!-- <template #show>
-                    <search-item label="商品名称">
-                        <el-select v-model="searchForm.category_id" placeholder="请选择商品分类" clearable>
-                            <el-option v-for="item in category_list" :key="item.id" :label="item.name" :value="item.id">
-                            </el-option>
-                        </el-select>
+                <template #show>
+                    <search-item label="收货人">
+                        <el-input v-model="searchForm.name" placeholder="收货人" clearable></el-input>
                     </search-item>
-                </template> -->
+                    <search-item label="手机号">
+                        <el-input v-model="searchForm.phone" placeholder="手机号" clearable></el-input>
+                    </search-item>
+                    <search-item label="开始时间">
+                        <el-date-picker v-model="searchForm.starttime" type="date" placeholder="开始日期"
+                            style="width: 90%;" value-format="YYYY-MM-DD" />
+                    </search-item>
+                    <search-item label="结束时间">
+                        <el-date-picker v-model="searchForm.endtime" type="date" placeholder="结束时间" style="width: 90%;"
+                            value-format="YYYY-MM-DD" />
+                    </search-item>
+                </template>
             </search>
 
             <!-- 新增和刷新 -->
