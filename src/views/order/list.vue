@@ -6,7 +6,6 @@
                 ::key="index"></el-tab-pane>
         </el-tabs>
         <el-card shadow="never" class="y-table border-0">
-
             <search @search="getData(1)" @reset="restSearchForm">
                 <!-- 默认插槽 -->
                 <search-item label="订单编号">
@@ -32,7 +31,7 @@
             </search>
 
             <!-- 新增和刷新 -->
-            <header-list layout="">
+            <header-list layout="reFresh,download" @reFresh="getData" @download="handleExportExcel">
                 <el-button type="danger" size="small" @click.stop="handleMultiDelete">批量删除</el-button>
             </header-list>
 
@@ -112,13 +111,16 @@
                     @current-change="getData" v-model:current-page="currentPage" />
             </div>
         </el-card>
+        <export-excel :tabs="tabbars" ref="ExportExcelRef"></export-excel>
     </div>
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import HeaderList from "@/components/HeaderList.vue";
 import Search from "@/components/Search.vue";
 import SearchItem from "@/components/SearchItem.vue";
+import ExportExcel from './ExportExcel.vue'
 
 import { toast } from "@/composables/util.js";
 
@@ -191,6 +193,9 @@ const tabbars = [{
     name: "退款中"
 }]
 
+
+const ExportExcelRef = ref(null);
+const handleExportExcel = () => ExportExcelRef.value.open()
 
 
 // 恢复删除
