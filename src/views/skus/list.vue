@@ -40,7 +40,7 @@
     <!-- 新增和修改 -->
     <form-drawer ref="formDrawerRef" :title="drawTitle" @submit="handleSubmit">
       <el-form :model="form" ref="formRef" :rules="rules" label-width="80px" :inline="false">
-        <el-form-item label="规格名称" prop="name">
+        <el-form-item label="" prop="name">
           <el-input v-model="form.name" placeholder="规格名称"></el-input>
         </el-form-item>
         <el-form-item label="排序" prop="order">

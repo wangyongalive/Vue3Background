@@ -92,13 +92,14 @@
                         </template>
                     </el-table-column>
                     <el-table-column label="操作" align="center">
-                        <template #default="scope">
-                            <el-button class="px-0" type="primary" size="small" text>订单发货</el-button>
-                            <el-button v-if="searchForm.tab === 'noship'" class="px-0" type="primary" size="small"
-                                text>商品详情</el-button>
-                            <el-button v-if="searchForm.tab === 'refunding'" class="px-0" type="primary" size="small"
+                        <template #default="{ row }">
+                            <el-button class="px-1" type="primary" size="small" text
+                                @click.stop="openInfoModal(row)">订单详情</el-button>
+                            <el-button v-if="searchForm.tab === 'noship'" class="px-1" type="primary" size="small"
+                                text>订单发货</el-button>
+                            <el-button v-if="searchForm.tab === 'refunding'" class="px-1" type="primary" size="small"
                                 text>同意退款</el-button>
-                            <el-button v-if="searchForm.tab === 'refunding'" class="px-0" type="primary" size="small"
+                            <el-button v-if="searchForm.tab === 'refunding'" class="px-1" type="primary" size="small"
                                 text>拒绝退款</el-button>
                         </template>
                     </el-table-column>
@@ -112,6 +113,7 @@
             </div>
         </el-card>
         <export-excel :tabs="tabbars" ref="ExportExcelRef"></export-excel>
+        <info-model ref="InfoModalRef" :info="info" />
     </div>
 </template>
 
@@ -121,6 +123,7 @@ import HeaderList from "@/components/HeaderList.vue";
 import Search from "@/components/Search.vue";
 import SearchItem from "@/components/SearchItem.vue";
 import ExportExcel from './ExportExcel.vue'
+import InfoModel from "./InfoModel.vue";
 
 import { toast } from "@/composables/util.js";
 
@@ -198,24 +201,23 @@ const ExportExcelRef = ref(null);
 const handleExportExcel = () => ExportExcelRef.value.open()
 
 
-// 恢复删除
-const handleRestoreGoods = () => {
-    // console.log(multiSelections2);
-    loading.value = true
-    restoreGoods(multiSelections.value)
-        .then(res => {
-            toast("恢复成功")
-            // 清空选中
-            if (multipleTableRef.value) {
-                multipleTableRef.value.clearSelection()
+const InfoModalRef = ref(null)
+const info = ref(null)
+const openInfoModal = (row) => {
+    row.order_items = row.order_items.map(o => {
+        // skus_type == 1 代表多规格
+        if (o.skus_type == 1 && o.goods_skus) {
+            let s = []
+            for (const k in o.goods_skus.skus) {
+                s.push(o.goods_skus.skus[k].value)
             }
-            getData(1)
-        })
-        .finally(() => {
-            loading.value = false
-        })
+            o.sku = s.join(",")
+        }
+        return o
+    })
+    info.value = row
+    InfoModalRef.value.open()
 }
-
 
 </script>
 
