@@ -82,7 +82,7 @@
       </el-form>
 
     </el-card>
-    
+
     <el-card shadow="never" v-if="info.refund_status != 'pending'">
       <template #header>
         <b class="text-sm">退款信息</b>
@@ -96,11 +96,13 @@
     </el-card>
   </el-drawer>
 
+  <ShipInfoModal ref="ShipInfoModalRef" />
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
 import { useDateFormat } from '@vueuse/core'
+import ShipInfoModal from "./ShipInfoModal.vue"
 
 const props = defineProps({
   info: Object
@@ -129,6 +131,15 @@ const refund_status = computed(() => {
   }
   return props.info.refund_status ? opt[props.info.refund_status] : ""
 })
+
+
+const ShipInfoModalRef = ref(null)
+const loading = ref(false)
+const openShipInfoModal = (id) => {
+  loading.value = true
+  // open 返回一个promise
+  ShipInfoModalRef.value.open(id).finally(() => loading.value = false)
+}
 
 const open = () => {
   dialogVisible.value = true
