@@ -98,9 +98,9 @@
                             <el-button v-if="searchForm.tab === 'noship'" class="px-1" type="primary" size="small"
                                 text>订单发货</el-button>
                             <el-button v-if="searchForm.tab === 'refunding'" class="px-1" type="primary" size="small"
-                                text>同意退款</el-button>
+                                text @click.stop="handleRefund(row.id, 1)">同意退款</el-button>
                             <el-button v-if="searchForm.tab === 'refunding'" class="px-1" type="primary" size="small"
-                                text>拒绝退款</el-button>
+                                text @click.stop="handleRefund(row.id, 0)">拒绝退款</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -125,11 +125,17 @@ import SearchItem from "@/components/SearchItem.vue";
 import ExportExcel from './ExportExcel.vue'
 import InfoModel from "./InfoModel.vue";
 
-import { toast } from "@/composables/util.js";
+import {
+    showModal,
+    showPrompt,
+    toast
+} from "~/composables/util"
+
 
 import {
     getOrderList,
     deleteOrder,
+    refundOrder
 } from "~/api/order"
 
 import { useInitTable } from "@/composables/useCommon";
@@ -217,6 +223,23 @@ const openInfoModal = (row) => {
     })
     info.value = row
     InfoModalRef.value.open()
+}
+
+const handleRefund = (id, agree) => {
+    // 弹出框和输入框 返回promise
+    (agree ? showModal("是否要同意该订单退款?") : showPrompt("请输入拒绝的理由"))
+        .then(({ value }) => {
+            const data = { agree }
+            if (!agree) {
+                data.disagree_reason = value
+            }
+            refundOrder(id, data)
+                .then(res => {
+                    getData(1)
+                    toast("操作成功")
+                })
+                .catch(console.log)
+        })
 }
 
 </script>
