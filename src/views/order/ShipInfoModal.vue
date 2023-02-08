@@ -22,7 +22,7 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref } from 'vue'
 import {
   getShipInfo
 } from "~/api/order"
